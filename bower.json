@@ -1,0 +1,21 @@
+{
+  "name": "museum-mapper",
+  "description": "Map of NYC museum locations, info and events",
+  "main": "index.js",
+  "authors": [
+    "bmohabir"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/bmohabir/museum-mapper",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.0",
+    "knockout": "^3.4.0"
+  }
+}
