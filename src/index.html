@@ -10,24 +10,55 @@
 	</head>
 	<body>
 		<div class="container">
-			<div class="navbar"></div>
-			<div class="menu"></div>
+			<div class="navbar">
+				<div class="button" id="show-menu">☰</div>
+				<h2 class="title">Museum Mapper</h2>
+			</div>
+			<div class="menu" id="slide-menu">
+				<div class="menu-header">
+					<h3 class="menu-title">Menu</h3>
+					<div class="button" id="hide-menu">&lt;-</div>
+				</div>
+				<div class="search-area">
+					<input type="text" class="search-box" id="filter-query">
+				</div>
+				<div class="list-area">
+					<ul>
+						<li>some</li>
+						<li>content</li>
+					</ul>
+				</div>
+			</div>
 			<div class="app" id="map"></div>
 		</div>
+		<!-- build:libjs js/app.js -->
+		<!-- endbuild -->
+		<!-- build:libjs js/lib.js -->
+		<script src="lib/jquery.js"></script>
+		<script src="lib/knockout.js"></script>
+		<!-- endbuild -->
 		<script>
 			var map;
 
 			function initMap() {
 				map = new google.maps.Map(document.getElementById('map'), {
 					center: {lat: 40.7413549, lng: -73.99802439999996},
-					zoom: 13
+					zoom: 13,
+					disableDefaultUI: true
 				});
 			}
+
+			$('#show-menu').click(showMenu);
+			$('#hide-menu').click(hideMenu);
+
+			function showMenu() {
+				$('#slide-menu').width(240);
+			}
+
+			function hideMenu() {
+				$('#slide-menu').width(0);
+			}
 		</script>
-		<!-- build:libjs js/lib.js -->
-		<script src="lib/jquery.js"></script>
-		<script src="lib/knockout.js"></script>
-		<!-- endbuild -->
 		<script src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyBeospcANRJzzyqoXN7bnVksADKpzSEdtI&amp;callback=initMap" async defer></script>
 	</body>
 </html>
