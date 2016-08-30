@@ -4,7 +4,30 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device=width, initial-scale=1.0">
 		<title>Museum Mapper</title>
+		<!-- build:css css/styles.css -->
+		<link rel="stylesheet" href="css/layout.css">
+		<!-- endbuild -->
 	</head>
 	<body>
+		<div class="container">
+			<div class="navbar"></div>
+			<div class="menu"></div>
+			<div class="app" id="map"></div>
+		</div>
+		<script>
+			var map;
+
+			function initMap() {
+				map = new google.maps.Map(document.getElementById('map'), {
+					center: {lat: 40.7413549, lng: -73.99802439999996},
+					zoom: 13
+				});
+			}
+		</script>
+		<!-- build:libjs js/lib.js -->
+		<script src="lib/jquery.js"></script>
+		<script src="lib/knockout.js"></script>
+		<!-- endbuild -->
+		<script src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyBeospcANRJzzyqoXN7bnVksADKpzSEdtI&amp;callback=initMap" async defer></script>
 	</body>
 </html>
