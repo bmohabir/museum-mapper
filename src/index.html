@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device=width, initial-scale=1.0">
-		<title>Museum Mapper</title>
+		<title>NYC Museums</title>
 		<!-- build:css css/styles.css -->
 		<link rel="stylesheet" href="css/layout.css">
 		<!-- endbuild -->
@@ -12,15 +12,12 @@
 		<div class="container">
 			<div class="navbar">
 				<div class="button" id="show-menu">☰</div>
-				<h2 class="title">Museum Mapper</h2>
+				<h2 class="title">NYC Museums</h2>
 			</div>
 			<div class="menu" id="slide-menu">
-				<div class="menu-header">
-					<h3 class="menu-title">Menu</h3>
-					<div class="button" id="hide-menu">&lt;-</div>
-				</div>
+				<div class="button" id="hide-menu">&#10094;</div>
 				<div class="search-area">
-					<input type="text" class="search-box" id="filter-query">
+					<input type="text" class="search-box" placeholder="Search" id="filter-query">
 				</div>
 				<div class="list-area">
 					<ul>
@@ -31,13 +28,24 @@
 			</div>
 			<div class="app" id="map"></div>
 		</div>
-		<!-- build:libjs js/app.js -->
-		<!-- endbuild -->
 		<!-- build:libjs js/lib.js -->
 		<script src="lib/jquery.js"></script>
 		<script src="lib/knockout.js"></script>
 		<!-- endbuild -->
+		<!-- build:libjs js/app.js -->
+		<!-- endbuild -->
 		<script>
+			function showMenu() {
+				$('#slide-menu').width(240);
+			}
+
+			function hideMenu() {
+				$('#slide-menu').width(0);
+			}
+
+			$('#show-menu').click(showMenu);
+			$('#hide-menu').click(hideMenu);
+
 			var map;
 
 			function initMap() {
@@ -46,17 +54,6 @@
 					zoom: 13,
 					disableDefaultUI: true
 				});
-			}
-
-			$('#show-menu').click(showMenu);
-			$('#hide-menu').click(hideMenu);
-
-			function showMenu() {
-				$('#slide-menu').width(240);
-			}
-
-			function hideMenu() {
-				$('#slide-menu').width(0);
 			}
 		</script>
 		<script src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyBeospcANRJzzyqoXN7bnVksADKpzSEdtI&amp;callback=initMap" async defer></script>
