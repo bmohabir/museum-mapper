@@ -17,12 +17,11 @@
 			<div class="menu" id="slide-menu">
 				<div class="button" id="hide-menu">&#10094;</div>
 				<div class="search-area">
-					<input type="text" class="search-box" placeholder="Search" id="filter-query">
+					<input type="text" class="search-box" placeholder="Search" id="filter-query" data-bind="textInput: searchQuery">
 				</div>
 				<div class="list-area">
-					<ul>
-						<li>some</li>
-						<li>content</li>
+					<ul class="museum-list" data-bind="foreach: model.museums">
+						<li class="list-item"><a href="#" data-bind="text: name"></a></li>
 					</ul>
 				</div>
 			</div>
@@ -33,19 +32,12 @@
 		<script src="lib/knockout.js"></script>
 		<!-- endbuild -->
 		<!-- build:libjs js/app.js -->
+		<script src="js/app0.js" async defer></script>
+		<script src="js/model.js"></script>
+		<script src="js/app1.js"></script>
+		<script src="js/app2.js"></script>
 		<!-- endbuild -->
 		<script>
-			function showMenu() {
-				$('#slide-menu').width(240);
-			}
-
-			function hideMenu() {
-				$('#slide-menu').width(0);
-			}
-
-			$('#show-menu').click(showMenu);
-			$('#hide-menu').click(hideMenu);
-
 			var map;
 
 			function initMap() {
@@ -54,6 +46,7 @@
 					zoom: 13,
 					disableDefaultUI: true
 				});
+				initMarkers();
 			}
 		</script>
 		<script src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyBeospcANRJzzyqoXN7bnVksADKpzSEdtI&amp;callback=initMap" async defer></script>
