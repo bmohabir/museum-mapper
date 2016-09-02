@@ -2,6 +2,7 @@
 
 function showMenu() {
 	$('#slide-menu').width(240);
+	$('#filter-query').focus();
 }
 
 function hideMenu() {

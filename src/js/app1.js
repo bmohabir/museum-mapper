@@ -291,7 +291,7 @@ var infoWindow;
 // creates map markers from data stored in model.museumsData
 // called by initMap()
 function initMarkers() {
-	model.museumsData.forEach(function(loc, id) {
+	model.museumsData.forEach(function(loc) {
     	var position = loc.location;
     	var title = loc.name;
 
@@ -299,7 +299,6 @@ function initMarkers() {
         	position: position,
         	title: title,
          	animation: google.maps.Animation.DROP,
-         	id: id
     	});
 
     	// set marker click to open infowindow

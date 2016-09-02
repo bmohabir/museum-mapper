@@ -10,8 +10,8 @@ var ViewModel = function() {
 
 	// bound to search box input
 	self.searchQuery = ko.observable('');
-	// stores computed visible museums for previous
-	// query to compare with current result
+	// stores computed visible museums for previous query
+	// to compare with current result
 	self.lastVM = [];
 	self.visibleMuseums = ko.computed(function() {
 		// use observable array for Knockout remove() method
@@ -31,7 +31,7 @@ var ViewModel = function() {
 			}
 		});
 		// check if visibleMuseums has actually changed
-		// used to prevent unnecessary marker updates
+		// (used to prevent unnecessary marker updates)
 		if (!arraysEqual(vM(), self.lastVM)) {
 			filterMarkers();
 			self.lastVM = vM();
