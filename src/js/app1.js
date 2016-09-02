@@ -349,13 +349,21 @@ function menuInfoWindow(id) {
 function filterMarkers() {
 	var museums = model.museums();
 
-	museums.forEach(function(museum, id) {
-		var isVisible = museum().visible();
+	// avoid race condition with maps API
+	if (markers.length != museums.length) {
+		return;
+	}
 
-		if (isVisible && markers[id]) {
-			markers[id].setMap(map);
-		} else if (markers[id]) {
-			markers[id].setMap(null);
+	museums.forEach(function(museum, id) {
+		var makeVisible = museum().visible();
+		var marker = markers[id];
+		// only update markers that need updating
+		var markerVisible = !!marker.getMap();
+
+		if (makeVisible && !markerVisible) {
+			marker.setMap(map);
+		} else if (!makeVisible && markerVisible) {
+			marker.setMap(null);
 		}
 	});
 }
