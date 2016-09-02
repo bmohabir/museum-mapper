@@ -19,9 +19,10 @@
 				<div class="search-area">
 					<input type="text" class="search-box" placeholder="Search" id="filter-query" data-bind="textInput: searchQuery">
 				</div>
+				<hr class="menu-rule">
 				<div class="list-area">
-					<ul class="museum-list" data-bind="foreach: model.museums">
-						<li class="list-item"><a href="#" data-bind="text: name"></a></li>
+					<ul class="museum-list" data-bind="foreach: visibleMuseums">
+						<li class="list-item"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></li>
 					</ul>
 				</div>
 			</div>
@@ -40,12 +41,19 @@
 		<script>
 			var map;
 
+			// callback function for Google Maps API
+			// loads map in '#map' div once API is loaded
 			function initMap() {
 				map = new google.maps.Map(document.getElementById('map'), {
 					center: {lat: 40.7413549, lng: -73.99802439999996},
 					zoom: 13,
-					disableDefaultUI: true
+					// hide style/zoom/streetview UI
+					disableDefaultUI: true,
+					styles: mapStyle
 				});
+				// set infoWindow to new instance of InfoWindow
+				// class once API is loaded
+				infoWindow = new google.maps.InfoWindow();
 				initMarkers();
 			}
 		</script>

@@ -1,20 +1,32 @@
+// Museum class constructor
+// Contains name to display and visibility state
+// for Knockout bindings
 var Museum = function(obj, id) {
 	this.name = obj.name;
 	this.id = id;
-	this.visible = true;
+	this.visible = ko.observable(true);
 };
 
+// Model class constructor function
+// Contains museum data used to populate
+// map markers and Knockout bindings
 var Model = function() {
+	// contains museum data
+	// name: string containing museum name
+	// location: object containing lat and lng coordinates
 	this.museumsData = [
-		{name: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-	    {name: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-	    {name: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-	    {name: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-	    {name: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-	    {name: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+		{name: 'American Museum of Natural History', location: {lat: 40.7813241, lng: -73.9739882}},
+		{name: 'Brooklyn Museum', location: {lat: 40.6712062, lng: -73.9636306}},
+		{name: 'Intrepid Sea, Air & Space Museum', location: {lat: 40.7645266, lng: -73.9996076}},
+	    {name: 'The Metropolitan Museum of Art', location: {lat: 40.7794366, lng: -73.963244}},
+	    {name: 'Museum of Modern Art', location: {lat: 40.7614327, lng: -73.9776216}},
+	    {name: 'Museum of the Moving Image', location: {lat: 40.7563454, lng: -73.9239496}},
+	    {name: 'New York Historical Society', location: {lat: 40.779306, lng: -73.97427}},
+	    {name: 'Solomon R. Guggenheim Museum', location: {lat: 40.7289796, lng: -73.9589706}}
 	];
-
+	// used by Knockout list and search functionality
 	this.museums = ko.observableArray();
 };
 
+// initializes the model
 var model = new Model();

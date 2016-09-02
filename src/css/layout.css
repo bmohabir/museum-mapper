@@ -6,6 +6,15 @@ html, body {
 	font-family: sans-serif;
 }
 
+a {
+	text-decoration: none;
+	color: gray;
+}
+
+a:hover {
+	color: white;
+}
+
 .container {
 	display: flex;
 	flex-wrap: wrap;
@@ -35,6 +44,7 @@ html, body {
 	margin: auto;
 	float: right;
 	font-size: 20px;
+	color: white;
 }
 
 .title {
@@ -44,7 +54,7 @@ html, body {
 }
 
 .menu {
-	background: gray;
+	background: #3A4045;
 	width: 0;
 	position: fixed;
     z-index: 99;
@@ -52,7 +62,8 @@ html, body {
     left: 0;
     overflow-x: hidden;
     height: 100%;
-    transition: 0.5s;
+    transition: 0.4s;
+    color: gray;
 }
 
 /* TODO: media query to open menu on large screen by default */
@@ -69,12 +80,19 @@ html, body {
 }
 
 .search-area {
-	margin: 10px;
+	margin: 10px 10px 25px 10px;
 }
 
 .search-box {
 	width: 210px;
 	font-size: 14px;
+}
+
+.menu-rule {
+	color: #555;
+	background-color: #555;
+	border: 0;
+	height: 1px;
 }
 
 .list-area {
@@ -83,13 +101,14 @@ html, body {
 
 .museum-list {
 	margin: 0;
-	padding: 10px;
+	padding: 0 10px;
 }
 
 .list-item {
 	overflow: hidden;
   	white-space: nowrap;
 	text-overflow: ellipsis;
+	margin: 10px auto;
 }
 
 .app {

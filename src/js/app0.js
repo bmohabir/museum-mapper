@@ -1,3 +1,5 @@
+// this section handles showing and hiding the sidebar menu
+
 function showMenu() {
 	$('#slide-menu').width(240);
 }
