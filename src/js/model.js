@@ -1,9 +1,10 @@
 // Museum class constructor
 // Contains name to display and visibility state
 // for Knockout bindings
-var Museum = function(obj) {
+var Museum = function(obj, id) {
 	this.name = obj.name;
 	this.visible = ko.observable(true);
+	this.id = id;
 };
 
 // Model class constructor function
