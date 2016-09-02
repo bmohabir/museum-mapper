@@ -10,8 +10,8 @@ var ViewModel = function() {
 
 	// bound to search box input
 	self.searchQuery = ko.observable('');
-	// stores computed visible museums for previous query
-	// to compare with current result
+	// stores most recent search result
+	// (for comparing with current result)
 	self.lastVM = [];
 	self.visibleMuseums = ko.computed(function() {
 		// use observable array for Knockout remove() method
