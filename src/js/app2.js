@@ -14,7 +14,7 @@ var ViewModel = function() {
 	// (for comparing with current result)
 	self.lastVM = [];
 	self.visibleMuseums = ko.computed(function() {
-		// use observable array for Knockout remove() method
+		// so we can use ko.observableArray.remove method
 		var vM = ko.observableArray();
 		// search should be case insensitive
 		var searchQuery = self.searchQuery().toLowerCase();
@@ -42,7 +42,7 @@ var ViewModel = function() {
 	}, self)
 	// bound to clicks on menu list items
 	self.clickItem = function(item) {
-		menuInfoWindow(item.id);
+		menuSelMarker(item.id);
 	};
 };
 

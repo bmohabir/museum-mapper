@@ -39,7 +39,7 @@
 		<script src="js/app2.js"></script>
 		<!-- endbuild -->
 		<script>
-			var map;
+			var map, infoWindow;
 
 			// callback function for Google Maps API
 			// loads map in '#map' div once API is loaded
@@ -51,8 +51,7 @@
 					disableDefaultUI: true,
 					styles: mapStyle
 				});
-				// set infoWindow to new instance of InfoWindow
-				// class once API is loaded
+
 				infoWindow = new google.maps.InfoWindow();
 				initMarkers();
 			}

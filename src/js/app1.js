@@ -284,12 +284,8 @@ var mapStyle = [
 	}
 ];
 
-// pre-initialize global for infoWindow before
-// maps API is loaded
-var infoWindow;
-
 // creates map markers from data stored in model.museumsData
-// called by initMap()
+// called by initMap
 function initMarkers() {
 	model.museumsData.forEach(function(loc) {
     	var position = loc.location;
@@ -303,7 +299,7 @@ function initMarkers() {
 
     	// set marker click to open infowindow
     	marker.addListener('click', function() {
-        	makeInfoWindow(this, infoWindow);
+        	selMarker(this);
     	});
 
     	markers.push(marker);
@@ -320,26 +316,55 @@ function initMarkers() {
 	map.fitBounds(bounds);
 }
 
+// triggers marker selected animation and
+// opens infowindow
+function selMarker(marker) {
+	var currentMarker = infoWindow.marker;
+
+	if (currentMarker == marker) {
+		// no need to select an already selected marker
+		return;
+	} else if (currentMarker) {
+		// ensure only one marker can be selected at a time
+		deselMarker(currentMarker);
+	}
+
+	toggleBounce(marker, true);
+	displayInfoWindow(marker);
+}
+
+// cancels animation on given marker
+function deselMarker(marker) {
+	toggleBounce(marker, false);
+	infoWindow.marker = null;
+}
+
+// toggles marker bounce animation
+function toggleBounce(marker, bounce) {
+	if (bounce) {
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+	} else {
+		marker.setAnimation(null);
+	}
+}
+
 // basic info window display function
 // TODO: API data
-function makeInfoWindow(marker, infowindow) {
-    if (infowindow.marker == marker) {
-        return;
-    }
-
-    infowindow.marker = marker;
-    infowindow.setContent('<div>' + marker.title + '</div>');
-    infowindow.open(map, marker);
-    infowindow.addListener('closeclick', function() {
-        infowindow.marker = null;
+function displayInfoWindow(marker) {
+    infoWindow.marker = marker;
+    infoWindow.setContent('<div>' + marker.title + '</div>');
+    infoWindow.open(map, marker);
+    infoWindow.addListener('closeclick', function() {
+        // deselect marker if info window closed
+        deselMarker(marker);
     });
 }
 
 // displays info window for marker with index matching 'id'
 // called by viewmodel clickItem() method
-function menuInfoWindow(id) {
+function menuSelMarker(id) {
 	if (markers[id]) {
-		makeInfoWindow(markers[id], infoWindow);
+		selMarker(markers[id]);
 	}
 }
 
