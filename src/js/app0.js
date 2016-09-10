@@ -1,5 +1,5 @@
 /**
-* shows DOM menu and focuses search box
+* Shows DOM menu and focuses search box
 */
 function showMenu() {
 	$('#slide-menu').width(240);
@@ -7,7 +7,7 @@ function showMenu() {
 }
 
 /**
-* hides DOM menu
+* Hides DOM menu
 */
 function hideMenu() {
 	$('#slide-menu').width(0);

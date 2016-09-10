@@ -9,7 +9,7 @@ var ViewModel = function() {
 	var self = this;
 
 	/**
-	* @description populates `model.museums` using `model.museumsData`
+	* Populates `model.museums` using `model.museumsData`
 	*/
 	(function init() {
 		model.museumsData.forEach(function(museum, id) {
@@ -18,16 +18,15 @@ var ViewModel = function() {
 	})();
 
 	/**
-	* bound to DOM search box input
+	* Bound to DOM search box input
 	*/
 	self.searchQuery = ko.observable('');
 	/**
-	* stores most recent search results for comparing with current results
+	* Stores most recent search results for comparing with current results
 	*/
 	self.lastVM = [];
 	/**
-	* computes to search results for current `searchQuery`,
-	* calls `filterMarkers`
+	* Computes to results for current `searchQuery`, calls `filterMarkers`
 	*/
 	self.visibleMuseums = ko.computed(function() {
 		// so we can use `ko.observableArray.remove`
@@ -56,7 +55,7 @@ var ViewModel = function() {
 		return vM();
 	}, self)
 	/**
-	* fires when bound DOM list item is clicked, calls `menuSelMarker` with
+	* Fires when bound DOM list item is clicked, calls `menuSelMarker` with
 	* museum `id` property as parameter
 	*/
 	self.clickItem = function(item) {
