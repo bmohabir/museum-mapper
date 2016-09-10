@@ -1,20 +1,34 @@
-// Knockout ViewModel class constructor
+/**
+* Knockout ViewModel
+* @constructor
+*/
 var ViewModel = function() {
-	// for preserving current 'this'
+	// makes keeping track of `this` less confusing
 	var self = this;
 
-	// populate observableArray using data from model.museumsData
-	model.museumsData.forEach(function(museum, id) {
-		model.museums.push(ko.observable(new Museum(museum, id)));
-	});
+	/**
+	* @description populates `model.museums` using `model.museumsData`
+	*/
+	(function init() {
+		model.museumsData.forEach(function(museum, id) {
+			model.museums.push(ko.observable(new Museum(museum, id)));
+		});
+	})();
 
-	// bound to search box input
+	/**
+	* bound to DOM search box input
+	*/
 	self.searchQuery = ko.observable('');
-	// stores most recent search result
-	// (for comparing with current result)
+	/**
+	* stores most recent search results for comparing with current results
+	*/
 	self.lastVM = [];
+	/**
+	* computes to search results for current `searchQuery`,
+	* calls `filterMarkers`
+	*/
 	self.visibleMuseums = ko.computed(function() {
-		// so we can use ko.observableArray.remove method
+		// so we can use `ko.observableArray.remove`
 		var vM = ko.observableArray();
 		// search should be case insensitive
 		var searchQuery = self.searchQuery().toLowerCase();
@@ -23,6 +37,7 @@ var ViewModel = function() {
 			var museumName = museum().name.toLowerCase();
 
 			if (museumName.search(searchQuery) == -1) {
+				// update marker visibility and DOM search results list
 				museum().visible(false);
 				vM.remove(museum);
 			} else {
@@ -30,17 +45,18 @@ var ViewModel = function() {
 				vM.push(museum);
 			}
 		});
-		// check if visibleMuseums has actually changed
-		// (used to prevent unnecessary marker updates)
+		// check if results have changed to avoid unnecessary updates
 		if (!arraysEqual(vM(), self.lastVM)) {
 			filterMarkers();
 			self.lastVM = vM();
 			return vM();
 		}
-
 		return vM();
 	}, self)
-	// bound to clicks on menu list items
+	/**
+	* fires when bound DOM list item is clicked, calls `menuSelMarker` with
+	* museum `id` property as parameter
+	*/
 	self.clickItem = function(item) {
 		menuSelMarker(item.id);
 	};

@@ -1,4 +1,6 @@
-// array to store map markers
+/**
+* used to store map markers
+*/
 var markers = [];
 
 // 'becomeadinosaur' map style from:
@@ -284,40 +286,45 @@ var mapStyle = [
 	}
 ];
 
-// creates map markers from data stored in model.museumsData
-// called by initMap
+/**
+* Creates map markers from `model.museumsData`, called by `initMap()`
+*/
 function initMarkers() {
-	model.museumsData.forEach(function(loc) {
-    	var position = loc.location;
-    	var title = loc.name;
+	model.museumsData.forEach(function(museum, id) {
+    	var position = museum.location;
+    	var title = museum.name;
 
     	var marker = new google.maps.Marker({
         	position: position,
         	title: title,
          	animation: google.maps.Animation.DROP,
+         	id: id
     	});
 
     	// set marker click to open infowindow
     	marker.addListener('click', function() {
         	selMarker(this);
     	});
-
+    	// add marker to `markers`
     	markers.push(marker);
 	});
 
-	// below code displays markers on map and adjusts
-	// map viewport to contain all visible markers
+	// for adjusting viewport to contain all visible markers
 	var bounds = new google.maps.LatLngBounds();
 
     markers.forEach(function(marker) {
+    	// add marker to map (make visible)
 		marker.setMap(map);
 		bounds.extend(marker.position);
 	});
+	// adjust viewport bounds
 	map.fitBounds(bounds);
 }
 
-// triggers marker selected animation and
-// opens infowindow
+/**
+* Animates selected marker and calls `openInfoWindow`
+* @parameter {object} marker - clicked marker object
+*/
 function selMarker(marker) {
 	var currentMarker = infoWindow.marker;
 
@@ -325,34 +332,32 @@ function selMarker(marker) {
 		// no need to select an already selected marker
 		return;
 	} else if (currentMarker) {
-		// ensure only one marker can be selected at a time
+		// ensure only one marker is selected at a time
 		deselMarker(currentMarker);
 	}
 
-	toggleBounce(marker, true);
-	displayInfoWindow(marker);
+	marker.setAnimation(google.maps.Animation.BOUNCE);
+	openInfoWindow(marker);
 }
 
-// cancels animation on given marker
+/**
+* Cancels animation and closes infowindow for selected marker
+* @parameter {object} marker - clicked marker object
+*/
 function deselMarker(marker) {
-	toggleBounce(marker, false);
+	marker.setAnimation(null);
 	infoWindow.marker = null;
+	infoWindow.setContent('');
 }
 
-// toggles marker bounce animation
-function toggleBounce(marker, bounce) {
-	if (bounce) {
-		marker.setAnimation(google.maps.Animation.BOUNCE);
-	} else {
-		marker.setAnimation(null);
-	}
-}
+/**
 
-// basic info window display function
-// TODO: API data
-function displayInfoWindow(marker) {
+*/
+function openInfoWindow(marker) {
+	infoWindow.setContent('<div class="infowindow-title">' + marker.title +
+		'</div>');
+	fourSquare(marker);
     infoWindow.marker = marker;
-    infoWindow.setContent('<div>' + marker.title + '</div>');
     infoWindow.open(map, marker);
     infoWindow.addListener('closeclick', function() {
         // deselect marker if info window closed
@@ -360,16 +365,58 @@ function displayInfoWindow(marker) {
     });
 }
 
-// displays info window for marker with index matching 'id'
-// called by viewmodel clickItem() method
+/**
+
+*/
+function setIWContent(data, marker) {
+	var name = infoWindow.content;
+	var icons = '';
+	data.categories.forEach(function(cat) {
+		var iconUrl = cat.icon.prefix + '32' + cat.icon.suffix;
+		icons += '<img src="' + iconUrl + '" alt="' + cat.name + '">';
+	});
+	var content = '<div class="infowindow">' + name +
+		'<div class="infowindow-icons">' + icons + '</div></div>';
+	infoWindow.setContent(content);
+	infoWindow.open(map, marker);
+}
+
+/**
+* Gets Foursquare API venue information for a museum
+
+* @returns {string} containing HTML-formatted Foursquare API data
+*/
+function fourSquare(marker) {
+	var id = marker.id;
+	var venueID = model.museums()[id]().venueID;
+	var url = 'https://api.foursquare.com/v2/venues/' + venueID +
+		'?client_id=ZKNJGS3QLW32133NNDFHO0O2LLEMUPJ3IOHXDU4QA133NCKR' +
+		'&client_secret=PB0I1OXTRWNMUCLE40OCD3TC1P3GFRJVI13AGBPMGZ5PZIDX' +
+		'&v=20160909';
+	$.getJSON({
+		url: url,
+		success: function(data) {
+			result = data.response.venue;
+			setIWContent(result, marker);
+		}
+	});
+}
+
+/**
+* Calls `selMarker` for marker matching clicked list item,
+* called by `viewModel.clickItem`
+* @parameter {number} id - index of marker in `markers`
+*/
 function menuSelMarker(id) {
 	if (markers[id]) {
 		selMarker(markers[id]);
 	}
 }
 
-// hide and show markers based on visibility property
-// called by visibleMuseums computed observable function
+/**
+* Show or hide markers based on `visible` property of Museum object with
+* matching `id`, called by `viewModel.visibleMuseums` updates
+*/
 function filterMarkers() {
 	var museums = model.museums();
 
@@ -392,7 +439,12 @@ function filterMarkers() {
 	});
 }
 
-// check if two arrays are the 'same'
+/**
+* Check if two arrays are the same length and contain the same data
+* @parameter {array} arr1 - first array to compare
+* @parameter {array} arr2 - second array to compare
+* @returns {boolean}
+*/
 function arraysEqual(arr1, arr2) {
 	if (arr1.length != arr2.length) {
 		return false;
