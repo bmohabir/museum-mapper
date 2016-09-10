@@ -3,7 +3,9 @@
 * @constructor
 */
 var ViewModel = function() {
-	// makes keeping track of `this` less confusing
+	/**
+	* Makes keeping track of `this` less confusing
+	*/
 	var self = this;
 
 	/**

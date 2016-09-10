@@ -1,10 +1,12 @@
 /**
-* used to store map markers
+* Used to store map markers
 */
 var markers = [];
 
-// 'becomeadinosaur' map style from:
-// https://snazzymaps.com/style/74/becomeadinosaur
+/**
+* 'becomeadinosaur' map style from:
+* https://snazzymaps.com/style/74/becomeadinosaur
+*/
 var mapStyle = [
 	{
 	    "elementType": "labels.text",
@@ -287,7 +289,7 @@ var mapStyle = [
 ];
 
 /**
-* Creates map markers from `model.museumsData`, called by `initMap()`
+* Creates map markers from `model.museumsData`, called by `initMap`
 */
 function initMarkers() {
 	model.museumsData.forEach(function(museum, id) {
@@ -351,11 +353,14 @@ function deselMarker(marker) {
 }
 
 /**
-
+* Opens info window containing `title` property of passed marker, ensuring only
+* one info window is open at a time and calls `fourSquare` API function
+* @parameter {object} marker - a Google Maps marker object
 */
 function openInfoWindow(marker) {
 	infoWindow.setContent('<div class="infowindow-title">' + marker.title +
 		'</div>');
+	// call Foursquare API (runs asynchronously)
 	fourSquare(marker);
     infoWindow.marker = marker;
     infoWindow.open(map, marker);
@@ -366,9 +371,12 @@ function openInfoWindow(marker) {
 }
 
 /**
-
+* Updates open info window with content passed in `data` parameter
+* @parameter {object} data - `venue` subproperty of Foursquare API
+* response object
+* @parameter {object} marker - Google Maps marker object
 */
-function setIWContent(data, marker) {
+function updateInfoWindow(data, marker) {
 	var name = infoWindow.content;
 	var icons = '';
 	data.categories.forEach(function(cat) {
@@ -378,26 +386,29 @@ function setIWContent(data, marker) {
 	var content = '<div class="infowindow">' + name +
 		'<div class="infowindow-icons">' + icons + '</div></div>';
 	infoWindow.setContent(content);
+	// refresh marker position to ensure content isn't offscreen
 	infoWindow.open(map, marker);
 }
 
 /**
-* Gets Foursquare API venue information for a museum
-
-* @returns {string} containing HTML-formatted Foursquare API data
+* Gets Foursquare API venue information for a museum and passes it to
+* `updateInfoWindow` (runs asynchronously)
+* @parameter {object} marker - Google Maps marker object
 */
 function fourSquare(marker) {
 	var id = marker.id;
 	var venueID = model.museums()[id]().venueID;
-	var url = 'https://api.foursquare.com/v2/venues/' + venueID +
-		'?client_id=ZKNJGS3QLW32133NNDFHO0O2LLEMUPJ3IOHXDU4QA133NCKR' +
-		'&client_secret=PB0I1OXTRWNMUCLE40OCD3TC1P3GFRJVI13AGBPMGZ5PZIDX' +
-		'&v=20160909';
+	var client_id = 'ZKNJGS3QLW32133NNDFHO0O2LLEMUPJ3IOHXDU4QA133NCKR';
+	var client_secret = 'PB0I1OXTRWNMUCLE40OCD3TC1P3GFRJVI13AGBPMGZ5PZIDX';
+	var version = 20160909;
+	var urlPrefix = 'https://api.foursquare.com/v2/venues/';
+	var url = urlPrefix + venueID +	'?client_id=' + client_id +
+		'&client_secret=' + client_secret +	'&v=' + version;
 	$.getJSON({
 		url: url,
 		success: function(data) {
 			result = data.response.venue;
-			setIWContent(result, marker);
+			updateInfoWindow(result, marker);
 		}
 	});
 }
