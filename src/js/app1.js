@@ -4,6 +4,28 @@
 var markers = [];
 
 /**
+* Contains photo and icon sizes for use in info windows
+*/
+var img = {
+	/**
+	* Calculates desired Foursquare photo size based on viewport size
+	* @returns {number}
+	*/
+	photoSize: function() {
+		// TODO: mediaquery logic
+		return 256;
+	},
+	/**
+	* Calculates desired Foursquare icon size based on viewport size
+	* @returns {number}
+	*/
+	iconSize: function() {
+		// TODO: mediaquery logic
+		return 32;
+	}
+};
+
+/**
 * 'becomeadinosaur' map style from:
 * https://snazzymaps.com/style/74/becomeadinosaur
 */
@@ -380,12 +402,17 @@ function openInfoWindow(marker) {
 function updateInfoWindow(data, marker) {
 	console.log(data);
 	var name = infoWindow.content;
-	var photoURL = data.bestPhoto.prefix + '256x256' + data.bestPhoto.suffix;
-	var photo = '<img src="' + photoURL + '" alt="' + marker.title + '">';
+	var photoSize = img.photoSize();
+	var sizeString = photoSize + 'x' + photoSize;
+	var photoURL = data.bestPhoto.prefix + sizeString + data.bestPhoto.suffix;
+	var photo = '<img src="' + photoURL + '" alt="' + marker.title +
+		'" width="' + photoSize + '" height="' + photoSize + '">';
 	var icons = '';
+	var iconSize = img.iconSize();
 	data.categories.forEach(function(cat) {
-		var iconUrl = cat.icon.prefix + '32' + cat.icon.suffix;
-		icons += '<img src="' + iconUrl + '" alt="' + cat.name + '">';
+		var iconUrl = cat.icon.prefix + img.iconSize() + cat.icon.suffix;
+		icons += '<img src="' + iconUrl + '" alt="' + cat.name + '" width="' +
+		iconSize + '" height="' + iconSize + '">';
 	});
 	var content = '<div class="infowindow"><div class="infowindow-photo">' +
 		photo + '<div class="infowindow-icons">' + icons + '</div></div>' +
