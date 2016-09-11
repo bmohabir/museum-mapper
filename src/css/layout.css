@@ -18,7 +18,7 @@ a:hover {
 .container {
 	display: flex;
 	flex-wrap: wrap;
-	height: 100%;
+	height: calc(100% - 40px);
 }
 
 .navbar {
@@ -41,10 +41,11 @@ a:hover {
 
 #hide-menu {
 	padding: 10px 15px;
-	margin: auto;
+	margin: 0 0 0 auto;
 	float: right;
 	font-size: 20px;
 	color: white;
+	text-align: right;
 }
 
 .title {
@@ -64,6 +65,9 @@ a:hover {
     height: 100%;
     transition: 0.4s;
     color: gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* TODO: media query to open menu on large screen by default */
@@ -80,7 +84,7 @@ a:hover {
 }
 
 .search-area {
-	margin: 10px 10px 25px 10px;
+	margin: 0 10px 20px 10px;
 }
 
 .search-box {
@@ -93,10 +97,13 @@ a:hover {
 	background-color: #555;
 	border: 0;
 	height: 1px;
+	margin: 5px 0 0 0;
+	width: 100%;
 }
 
 .list-area {
   	width: 240px;
+  	margin: 0;
 }
 
 .museum-list {
@@ -118,5 +125,17 @@ a:hover {
 
 .infowindow-icons {
 	display: flex;
-	background-color: steelblue;
+	background-color: #4682B4;
+}
+
+.credits {
+	margin: auto auto 10px auto;
+	width: 240px;
+	text-align: center;
+	font-size: 12px;
+}
+
+.credits-text{
+	font-size: 12px;
+	padding: 10px;
 }

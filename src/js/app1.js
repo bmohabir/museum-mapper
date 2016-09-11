@@ -5,6 +5,7 @@ var markers = [];
 
 /**
 * Stores marker icons
+* All icons credit: Maps Icons Collection https://mapicons.mapsmarker.com
 */
 var markerIcon = {
 	def: 'img/def_marker.png',
