@@ -3,7 +3,11 @@
 */
 function showMenu() {
 	$('#slide-menu').width(240);
-	$('#filter-query').focus();
+	// delay search box focus due to some browsers canceling CSS transitions
+	// halfway through
+	window.setTimeout(function() {
+		$('#filter-query').focus();
+	}, 500);
 }
 
 /**
