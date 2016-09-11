@@ -412,7 +412,7 @@ function fourSquare(marker) {
 	$.getJSON({
 		url: url,
 		success: function(data) {
-			result = data.response.venue;
+			var result = data.response.venue;
 			updateInfoWindow(result, marker);
 		}
 	});
