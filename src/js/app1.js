@@ -4,6 +4,16 @@
 var markers = [];
 
 /**
+* Stores marker icons
+*/
+var markerIcon = {
+	def: 'img/def_marker.png',
+	def_bounce: 'img/def_marker_bounce.png',
+	fav: 'img/fav_marker.png',
+	fav_bounce: 'img/fav_marker_bounce.png'
+};
+
+/**
 * Contains photo and icon sizes for use in info windows
 */
 var img = {
@@ -322,7 +332,8 @@ function initMarkers() {
         	position: position,
         	title: title,
          	animation: google.maps.Animation.DROP,
-         	id: id
+         	id: id,
+         	icon: markerIcon.def
     	});
 
     	// set marker click to open infowindow
@@ -361,6 +372,7 @@ function selMarker(marker) {
 	}
 
 	marker.setAnimation(google.maps.Animation.BOUNCE);
+	marker.setIcon(markerIcon.def_bounce);
 	openInfoWindow(marker);
 }
 
@@ -370,6 +382,7 @@ function selMarker(marker) {
 */
 function deselMarker(marker) {
 	marker.setAnimation(null);
+	marker.setIcon(markerIcon.def);
 	infoWindow.marker = null;
 	infoWindow.setContent('');
 }
