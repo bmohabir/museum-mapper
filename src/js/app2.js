@@ -59,9 +59,21 @@ var ViewModel = function() {
 	* museum `id` property as parameter
 	*/
 	self.clickItem = function(item) {
-		menuSelMarker(item.id);
+		menuSelMarker(item);
 	};
+	/**
+	* Fires when bound DOM list star is clicked, toggles fav status in list
+	* and calls `markerToggleFav` to toggle marker fav status
+	*/
+	self.toggleFav = function(item) {
+		item.fav() ? item.fav(false) : item.fav(true);
+		menuToggleFav(item);
+	}
 };
 
+/**
+* Contains viewModel object
+*/
+var viewModel = new ViewModel();
 // initializes the viewmodel
-ko.applyBindings(new ViewModel());
+ko.applyBindings(viewModel);

@@ -8,6 +8,7 @@ var Museum = function(obj, id) {
 	this.name = obj.name;
 	this.venueID = obj.venueID;
 	this.visible = ko.observable(true);
+	this.fav = ko.observable(false);
 	this.id = id;
 };
 

@@ -6,15 +6,6 @@ html, body {
 	font-family: sans-serif;
 }
 
-a {
-	text-decoration: none;
-	color: gray;
-}
-
-a:hover {
-	color: white;
-}
-
 .container {
 	display: flex;
 	flex-wrap: wrap;
@@ -84,12 +75,13 @@ a:hover {
 }
 
 .search-area {
-	margin: 0 10px 20px 10px;
+	margin: 0 0 10px 0;
+	padding: 0 20px;
 }
 
 .search-box {
-	width: 210px;
 	font-size: 14px;
+	width: 210px;
 }
 
 .menu-rule {
@@ -106,16 +98,50 @@ a:hover {
   	margin: 0;
 }
 
+a {
+	text-decoration: none;
+}
+
+.list-area a:hover {
+	color: white;
+}
+
 .museum-list {
 	margin: 0;
 	padding: 0 10px;
 }
 
 .list-item {
+	margin: 10px auto;
+	display: flex;
+	width: 240px;
+}
+
+.list-item-text > a {
+	color: gray;
+}
+
+.list-item-text {
+	display: block;
 	overflow: hidden;
   	white-space: nowrap;
 	text-overflow: ellipsis;
-	margin: 10px auto;
+	padding: 0 0 0 10px;
+	width: 200px;
+}
+
+.star {
+	height: 16px;
+}
+
+.star-fav {
+	font-size: 16px;
+	color: #FFD700;
+}
+
+.star-def {
+	font-size: 15px;
+	color: gray;
 }
 
 .app {
@@ -126,6 +152,14 @@ a:hover {
 .infowindow-icons {
 	display: flex;
 	background-color: #4682B4;
+}
+
+.infowindow-main {
+	display: block;
+}
+
+.infowindow-title {
+	display: inline-block;
 }
 
 .credits {

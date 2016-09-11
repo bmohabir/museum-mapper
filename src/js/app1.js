@@ -334,7 +334,11 @@ function initMarkers() {
         	title: title,
          	animation: google.maps.Animation.DROP,
          	id: id,
-         	icon: markerIcon.def
+         	icon: markerIcon.def,
+         	icons: {
+         		def: markerIcon.def,
+         		bounce: markerIcon.def_bounce
+         	}
     	});
 
     	// set marker click to open infowindow
@@ -373,7 +377,7 @@ function selMarker(marker) {
 	}
 
 	marker.setAnimation(google.maps.Animation.BOUNCE);
-	marker.setIcon(markerIcon.def_bounce);
+	marker.setIcon(marker.icons.bounce);
 	openInfoWindow(marker);
 }
 
@@ -383,7 +387,7 @@ function selMarker(marker) {
 */
 function deselMarker(marker) {
 	marker.setAnimation(null);
-	marker.setIcon(markerIcon.def);
+	marker.setIcon(marker.icons.def);
 	infoWindow.marker = null;
 	infoWindow.setContent('');
 }
@@ -424,6 +428,10 @@ function updateInfoWindow(data, marker) {
 		'" width="' + photoSize + '" height="' + photoSize + '">';
 	var icons = '';
 	var iconSize = img.iconSize();
+	//var favStar = '<a id="infowindow-star" href="#" ';
+	//var museum = model.museums()[marker.id]();
+	//var favStatus = museum.fav();
+	//favStar += favStatus ? 'class="star-fav">★</a>' : 'class="star-def">☆</a>';
 	data.categories.forEach(function(cat) {
 		var iconUrl = cat.icon.prefix + img.iconSize() + cat.icon.suffix;
 		icons += '<img src="' + iconUrl + '" alt="' + cat.name + '" width="' +
@@ -431,8 +439,14 @@ function updateInfoWindow(data, marker) {
 	});
 	var content = '<div class="infowindow"><div class="infowindow-photo">' +
 		photo + '<div class="infowindow-icons">' + icons + '</div></div>' +
-		name + '</div>';
+		'<div class="infowindow-main">' + name + '</div></div>';
 	infoWindow.setContent(content);
+	//var star = $('#infowindow-star');
+	//star.click(function() {
+	//	viewModel.toggleFav(museum);
+	//	favStatus ? star.text('★') : star.text('☆');
+	//	star.toggleClass('star-def star-fav');
+	//});
 	// refresh marker position to ensure content isn't offscreen
 	infoWindow.open(map, marker);
 }
@@ -466,13 +480,47 @@ function fourSquare(marker) {
 }
 
 /**
-* Calls `selMarker` for marker matching clicked list item,
+* Calls `selMarker` for marker matching given musem,
 * called by `viewModel.clickItem`
-* @parameter {number} id - index of marker in `markers`
+* @parameter {object} museum - museum corresponding to marker
 */
-function menuSelMarker(id) {
-	if (markers[id]) {
-		selMarker(markers[id]);
+function menuSelMarker(museum) {
+	var marker = markers[museum.id];
+	if (marker) {
+		selMarker(marker);
+	}
+}
+
+/**
+* Calls `markerToggleFav` for marker matching given museum,
+* called by `viewModel.toggleFav`
+* @parameter {object} museum - museum corresponding to marker
+*/
+function menuToggleFav(museum) {
+	var marker = markers[museum.id];
+	var favStatus = museum.fav();
+	if (marker) {
+		markerToggleFav(marker, favStatus);
+	}
+}
+
+/**
+* Toggles marker fav status and updates icon accordingly
+* @parameter {object} marker - Google Maps marker
+* @parameter {boolean} status - desired fav status
+*/
+function markerToggleFav(marker, status) {
+	if (status) {
+		marker.icons.def = markerIcon.fav;
+		marker.icons.bounce = markerIcon.fav_bounce;
+	} else {
+		marker.icons.def = markerIcon.def;
+		marker.icons.bounce = markerIcon.def_bounce;
+	}
+	if (marker.animation) {
+		marker.setIcon(marker.icons.bounce);
+	} else {
+		marker.setIcon(marker.icons.def);
 	}
 }
 
