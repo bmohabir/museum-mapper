@@ -12,7 +12,7 @@ var img = {
 	* @returns {number}
 	*/
 	photoSize: function() {
-		// TODO: mediaquery logic
+		// TODO: media query logic
 		return 256;
 	},
 	/**
@@ -20,7 +20,7 @@ var img = {
 	* @returns {number}
 	*/
 	iconSize: function() {
-		// TODO: mediaquery logic
+		// TODO: media query logic
 		return 32;
 	}
 };
@@ -400,6 +400,7 @@ function openInfoWindow(marker) {
 * @parameter {object} marker - Google Maps marker object
 */
 function updateInfoWindow(data, marker) {
+	// temporary for testing foursquare requests
 	console.log(data);
 	var name = infoWindow.content;
 	var photoSize = img.photoSize();
@@ -436,12 +437,17 @@ function fourSquare(marker) {
 	var urlPrefix = 'https://api.foursquare.com/v2/venues/';
 	var url = urlPrefix + venueID +	'?client_id=' + client_id +
 		'&client_secret=' + client_secret +	'&v=' + version;
-	$.getJSON({
+	$.get({
 		url: url,
 		success: function(data) {
 			var result = data.response.venue;
-			updateInfoWindow(result, marker);
-		}
+			updateInfoWindow(result,marker);
+		},
+		dataType: 'json',
+		timeout: 5000
+	}).fail(function() {
+		// TODO: better error handling
+		alert('Error loading Foursquare data');
 	});
 }
 
