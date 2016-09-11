@@ -358,8 +358,8 @@ function deselMarker(marker) {
 * @parameter {object} marker - a Google Maps marker object
 */
 function openInfoWindow(marker) {
-	infoWindow.setContent('<div class="infowindow-title">' + marker.title +
-		'</div>');
+	infoWindow.setContent('<h3 class="infowindow-title">' + marker.title +
+		'</h3>');
 	// call Foursquare API (runs asynchronously)
 	fourSquare(marker);
     infoWindow.marker = marker;
@@ -371,20 +371,25 @@ function openInfoWindow(marker) {
 }
 
 /**
-* Updates open info window with content passed in `data` parameter
-* @parameter {object} data - `venue` subproperty of Foursquare API
+* Updates open info window content with data from passed in
+* Foursquare API response object
+* @parameter {object} data - `venue` object subproperty of Foursquare API
 * response object
 * @parameter {object} marker - Google Maps marker object
 */
 function updateInfoWindow(data, marker) {
+	console.log(data);
 	var name = infoWindow.content;
+	var photoURL = data.bestPhoto.prefix + '256x256' + data.bestPhoto.suffix;
+	var photo = '<img src="' + photoURL + '" alt="' + marker.title + '">';
 	var icons = '';
 	data.categories.forEach(function(cat) {
 		var iconUrl = cat.icon.prefix + '32' + cat.icon.suffix;
 		icons += '<img src="' + iconUrl + '" alt="' + cat.name + '">';
 	});
-	var content = '<div class="infowindow">' + name +
-		'<div class="infowindow-icons">' + icons + '</div></div>';
+	var content = '<div class="infowindow"><div class="infowindow-photo">' +
+		photo + '<div class="infowindow-icons">' + icons + '</div></div>' +
+		name + '</div>';
 	infoWindow.setContent(content);
 	// refresh marker position to ensure content isn't offscreen
 	infoWindow.open(map, marker);
