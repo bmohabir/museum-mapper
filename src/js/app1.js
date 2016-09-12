@@ -458,7 +458,7 @@ function updateInfoWindow(data, marker) {
 */
 function fourSquare(marker) {
 	var id = marker.id;
-	var venueID = model.museums[id].venueID;
+	var venueID = model.museums[id].fsID;
 	var client_id = 'ZKNJGS3QLW32133NNDFHO0O2LLEMUPJ3IOHXDU4QA133NCKR';
 	var client_secret = 'PB0I1OXTRWNMUCLE40OCD3TC1P3GFRJVI13AGBPMGZ5PZIDX';
 	var version = 20160909;
