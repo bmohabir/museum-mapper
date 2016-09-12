@@ -24,7 +24,7 @@ var img = {
 	*/
 	photoSize: function() {
 		// TODO: media query logic
-		return 256;
+		return 200;
 	},
 	/**
 	* Calculates desired Foursquare icon size based on viewport size
@@ -458,7 +458,7 @@ function updateInfoWindow(data, marker) {
 */
 function fourSquare(marker) {
 	var id = marker.id;
-	var venueID = model.museums()[id]().venueID;
+	var venueID = model.museums[id].venueID;
 	var client_id = 'ZKNJGS3QLW32133NNDFHO0O2LLEMUPJ3IOHXDU4QA133NCKR';
 	var client_secret = 'PB0I1OXTRWNMUCLE40OCD3TC1P3GFRJVI13AGBPMGZ5PZIDX';
 	var version = 20160909;
@@ -499,9 +499,7 @@ function menuSelMarker(museum) {
 function menuToggleFav(museum) {
 	var marker = markers[museum.id];
 	var favStatus = museum.fav();
-	if (marker) {
-		markerToggleFav(marker, favStatus);
-	}
+	markerToggleFav(marker, favStatus);
 }
 
 /**
@@ -529,7 +527,7 @@ function markerToggleFav(marker, status) {
 * matching `id`, called by `viewModel.visibleMuseums` updates
 */
 function filterMarkers() {
-	var museums = model.museums();
+	var museums = model.museums;
 
 	// avoid race condition with maps API
 	if (markers.length != museums.length) {
@@ -537,7 +535,7 @@ function filterMarkers() {
 	}
 
 	museums.forEach(function(museum, id) {
-		var makeVisible = museum().visible();
+		var makeVisible = museum.visible();
 		var marker = markers[id];
 		// only update markers that need updating
 		var markerVisible = !!marker.getMap();

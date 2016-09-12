@@ -13,7 +13,7 @@ var ViewModel = function() {
 	*/
 	(function init() {
 		model.museumsData.forEach(function(museum, id) {
-			model.museums.push(ko.observable(new Museum(museum, id)));
+			model.museums.push(new Museum(museum, id));
 		});
 	})();
 
@@ -34,15 +34,15 @@ var ViewModel = function() {
 		// search should be case insensitive
 		var searchQuery = self.searchQuery().toLowerCase();
 
-		ko.utils.arrayForEach(model.museums(), function(museum) {
-			var museumName = museum().name.toLowerCase();
+		model.museums.forEach(function(museum) {
+			var museumName = museum.name.toLowerCase();
 
 			if (museumName.search(searchQuery) == -1) {
 				// update marker visibility and DOM search results list
-				museum().visible(false);
+				museum.visible(false);
 				vM.remove(museum);
 			} else {
-				museum().visible(true);
+				museum.visible(true);
 				vM.push(museum);
 			}
 		});

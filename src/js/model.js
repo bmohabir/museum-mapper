@@ -71,7 +71,7 @@ var Model = function() {
 	/**
 	* Contains `Museum` objects, populated by `viewModel.init`
 	*/
-	this.museums = ko.observableArray();
+	this.museums = [];
 };
 
 /**
