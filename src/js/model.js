@@ -10,6 +10,9 @@ var Museum = function(obj, id) {
 	this.evID = obj.evID;
 	this.fav = ko.observable(false);
 	this.id = id;
+	this.toggleFav = function() {
+		this.fav(!this.fav());
+	};
 };
 
 /**

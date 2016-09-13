@@ -66,7 +66,7 @@ var ViewModel = function() {
 	* and calls `markerToggleFav` to toggle marker fav status
 	*/
 	self.toggleFav = function(museum) {
-		museum.fav() ? museum.fav(false) : museum.fav(true);
+		museum.toggleFav();
 		markerToggleFav(museum, museum.fav());
 	};
 	/**
