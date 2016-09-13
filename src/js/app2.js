@@ -39,11 +39,9 @@ var ViewModel = function() {
 			var museumName = museum.name.toLowerCase();
 
 			if (museumName.search(searchQuery) == -1) {
-				museum.visible(false);
 				vIDs.remove(id);
 				vM.remove(museum);
 			} else {
-				museum.visible(true);
 				vIDs.push(id);
 				vM.push(museum);
 			}
