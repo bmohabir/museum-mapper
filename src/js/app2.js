@@ -24,51 +24,61 @@ var ViewModel = function() {
 	/**
 	* Stores most recent search results for comparing with current results
 	*/
-	self.lastVM = [];
+	self.lastResults = [];
 	/**
 	* Computes to results for current `searchQuery`, calls `filterMarkers`
 	*/
 	self.visibleMuseums = ko.computed(function() {
 		// so we can use `ko.observableArray.remove`
 		var vM = ko.observableArray();
+		var vIDs = ko.observableArray();
 		// search should be case insensitive
-		var searchQuery = self.searchQuery().toLowerCase();
+		var searchQuery = this.searchQuery().toLowerCase();
 
-		model.museums.forEach(function(museum) {
+		model.museums.forEach(function(museum, id) {
 			var museumName = museum.name.toLowerCase();
 
 			if (museumName.search(searchQuery) == -1) {
-				// update marker visibility and DOM search results list
 				museum.visible(false);
+				vIDs.remove(id);
 				vM.remove(museum);
 			} else {
 				museum.visible(true);
+				vIDs.push(id);
 				vM.push(museum);
 			}
 		});
 		// check if results have changed to avoid unnecessary updates
-		if (!arraysEqual(vM(), self.lastVM)) {
-			filterMarkers();
-			self.lastVM = vM();
+		if (!arraysEqual(vIDs(), this.lastResults)) {
+			filterMarkers(vIDs());
+			this.lastResults = vIDs();
 			return vM();
 		}
 		return vM();
-	}, self)
+	}, self);
 	/**
 	* Fires when bound DOM list item is clicked, calls `menuSelMarker` with
 	* museum `id` property as parameter
 	*/
-	self.clickItem = function(item) {
-		menuSelMarker(item);
+	self.clickItem = function(museum) {
+		selectMarker(museum);
 	};
 	/**
 	* Fires when bound DOM list star is clicked, toggles fav status in list
 	* and calls `markerToggleFav` to toggle marker fav status
 	*/
-	self.toggleFav = function(item) {
-		item.fav() ? item.fav(false) : item.fav(true);
-		menuToggleFav(item);
-	}
+	self.toggleFav = function(museum) {
+		museum.fav() ? museum.fav(false) : museum.fav(true);
+		markerToggleFav(museum, museum.fav());
+	};
+	/**
+	* Returns a single museum object by ID, called by view as needed
+	* @parameter {number} id - id property (index) of museum
+	* @returns {object} - museum object
+	*/
+	self.getMuseum = function(id) {
+		return model.museums[id];
+	};
 };
 
 /**

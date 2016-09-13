@@ -343,7 +343,7 @@ function initMarkers() {
 
     	// set marker click to open infowindow
     	marker.addListener('click', function() {
-        	selMarker(this);
+        	selectMarker(this);
     	});
     	// add marker to `markers`
     	markers.push(marker);
@@ -363,9 +363,10 @@ function initMarkers() {
 
 /**
 * Animates selected marker and calls `openInfoWindow`
-* @parameter {object} marker - clicked marker object
+* @parameter {object} clickItem - marker or museum object
 */
-function selMarker(marker) {
+function selectMarker(clickItem) {
+	var marker = markers[clickItem.id];
 	var currentMarker = infoWindow.marker;
 
 	if (currentMarker == marker) {
@@ -373,7 +374,7 @@ function selMarker(marker) {
 		return;
 	} else if (currentMarker) {
 		// ensure only one marker is selected at a time
-		deselMarker(currentMarker);
+		deselectMarker(currentMarker);
 	}
 
 	marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -385,7 +386,7 @@ function selMarker(marker) {
 * Cancels animation and closes infowindow for selected marker
 * @parameter {object} marker - clicked marker object
 */
-function deselMarker(marker) {
+function deselectMarker(marker) {
 	marker.setAnimation(null);
 	marker.setIcon(marker.icons.def);
 	infoWindow.marker = null;
@@ -406,7 +407,7 @@ function openInfoWindow(marker) {
     infoWindow.open(map, marker);
     infoWindow.addListener('closeclick', function() {
         // deselect marker if info window closed
-        deselMarker(marker);
+        deselectMarker(marker);
     });
 }
 
@@ -418,8 +419,6 @@ function openInfoWindow(marker) {
 * @parameter {object} marker - Google Maps marker object
 */
 function updateInfoWindow(data, marker) {
-	// temporary for testing foursquare requests
-	console.log(data);
 	var name = infoWindow.content;
 	var photoSize = img.photoSize();
 	var sizeString = photoSize + 'x' + photoSize;
@@ -428,10 +427,6 @@ function updateInfoWindow(data, marker) {
 		'" width="' + photoSize + '" height="' + photoSize + '">';
 	var icons = '';
 	var iconSize = img.iconSize();
-	//var favStar = '<a id="infowindow-star" href="#" ';
-	//var museum = model.museums()[marker.id]();
-	//var favStatus = museum.fav();
-	//favStar += favStatus ? 'class="star-fav">★</a>' : 'class="star-def">☆</a>';
 	data.categories.forEach(function(cat) {
 		var iconUrl = cat.icon.prefix + img.iconSize() + cat.icon.suffix;
 		icons += '<img src="' + iconUrl + '" alt="' + cat.name + '" width="' +
@@ -441,13 +436,6 @@ function updateInfoWindow(data, marker) {
 		photo + '<div class="infowindow-icons">' + icons + '</div></div>' +
 		'<div class="infowindow-main">' + name + '</div></div>';
 	infoWindow.setContent(content);
-	//var star = $('#infowindow-star');
-	//star.click(function() {
-	//	viewModel.toggleFav(museum);
-	//	favStatus ? star.text('★') : star.text('☆');
-	//	star.toggleClass('star-def star-fav');
-	//});
-	// refresh marker position to ensure content isn't offscreen
 	infoWindow.open(map, marker);
 }
 
@@ -457,8 +445,7 @@ function updateInfoWindow(data, marker) {
 * @parameter {object} marker - Google Maps marker object
 */
 function fourSquare(marker) {
-	var id = marker.id;
-	var venueID = model.museums[id].fsID;
+	var venueID = viewModel.getMuseum(marker.id).fsID;
 	var client_id = 'ZKNJGS3QLW32133NNDFHO0O2LLEMUPJ3IOHXDU4QA133NCKR';
 	var client_secret = 'PB0I1OXTRWNMUCLE40OCD3TC1P3GFRJVI13AGBPMGZ5PZIDX';
 	var version = 20160909;
@@ -469,7 +456,7 @@ function fourSquare(marker) {
 		url: url,
 		success: function(data) {
 			var result = data.response.venue;
-			updateInfoWindow(result,marker);
+			updateInfoWindow(result, marker);
 		},
 		dataType: 'json',
 		timeout: 5000
@@ -480,34 +467,12 @@ function fourSquare(marker) {
 }
 
 /**
-* Calls `selMarker` for marker matching given musem,
-* called by `viewModel.clickItem`
-* @parameter {object} museum - museum corresponding to marker
-*/
-function menuSelMarker(museum) {
-	var marker = markers[museum.id];
-	if (marker) {
-		selMarker(marker);
-	}
-}
-
-/**
-* Calls `markerToggleFav` for marker matching given museum,
-* called by `viewModel.toggleFav`
-* @parameter {object} museum - museum corresponding to marker
-*/
-function menuToggleFav(museum) {
-	var marker = markers[museum.id];
-	var favStatus = museum.fav();
-	markerToggleFav(marker, favStatus);
-}
-
-/**
 * Toggles marker fav status and updates icon accordingly
-* @parameter {object} marker - Google Maps marker
-* @parameter {boolean} status - desired fav status
+* @parameter {object} clickItem - marker or museum object
+* @parameter {boolean} status - desired marker fav status
 */
-function markerToggleFav(marker, status) {
+function markerToggleFav(clickItem, status) {
+	var marker = markers[clickItem.id];
 	if (status) {
 		marker.icons.def = markerIcon.fav;
 		marker.icons.bounce = markerIcon.fav_bounce;
@@ -523,26 +488,17 @@ function markerToggleFav(marker, status) {
 }
 
 /**
-* Show or hide markers based on `visible` property of Museum object with
-* matching `id`, called by `viewModel.visibleMuseums` updates
+* Show or hide markers based on parameter, called by `viewModel.visibleMuseums`
+* @parameter {array} visibleIDs - array of ids of visible markers
 */
-function filterMarkers() {
-	var museums = model.museums;
-
-	// avoid race condition with maps API
-	if (markers.length != museums.length) {
-		return;
-	}
-
-	museums.forEach(function(museum, id) {
-		var makeVisible = museum.visible();
-		var marker = markers[id];
-		// only update markers that need updating
+function filterMarkers(visibleIDs) {
+	markers.forEach(function(marker, id) {
 		var markerVisible = !!marker.getMap();
+		var visible = (visibleIDs.indexOf(id) !== -1) ? true : false;
 
-		if (makeVisible && !markerVisible) {
+		if (visible && !markerVisible) {
 			marker.setMap(map);
-		} else if (!makeVisible && markerVisible) {
+		} else if (!visible && markerVisible) {
 			marker.setMap(null);
 		}
 	});
@@ -555,10 +511,10 @@ function filterMarkers() {
 * @returns {boolean}
 */
 function arraysEqual(arr1, arr2) {
-	if (arr1.length != arr2.length) {
+	if (arr1.length !== arr2.length) {
 		return false;
 	}
-	for (var i=arr1.length; i>=0; i--) {
+	for (var i = arr1.length; i >= 0; i--) {
 		if (arr1[i] !== arr2[i]) {
 			return false;
 		}
