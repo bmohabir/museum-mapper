@@ -84,4 +84,4 @@ var ViewModel = function() {
 */
 var viewModel = new ViewModel();
 // initializes the viewmodel
-ko.applyBindings(viewModel);
+$(ko.applyBindings(viewModel));

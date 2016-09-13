@@ -15,6 +15,24 @@ var markerIcon = {
 };
 
 /**
+* Stores HTML templates for info window content
+* To use, simply call `eval` on the property containing the template you want to
+* use inside a scope where the placeholders have been defined
+*/
+var infoWindowTemplates = {
+	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
+	photo: `\`<img src="\${photoURL}" alt="\${name}"\` +
+		\`width="\${photoSize}" height="\${photoSize}">\``,
+	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}"\` +
+		\`height="\${iconSize}">\``,
+	star: `\`<div class="star"><a class="star-fav" href="#"\` +
+		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
+		\`$root.toggleFav($root.getMuseum(\${id}))">★</a><a class="star-def"\` +
+		\` href="#" data-bind="visible: !$root.getMuseum(\${id}).fav(), \` +
+		\`click: $root.toggleFav($root.getMuseum(\${id}))">☆</a></div>\``
+};
+
+/**
 * Contains photo and icon sizes for use in info windows
 */
 var img = {
@@ -399,8 +417,13 @@ function deselectMarker(marker) {
 * @parameter {object} marker - a Google Maps marker object
 */
 function openInfoWindow(marker) {
-	infoWindow.setContent('<h3 class="infowindow-title">' + marker.title +
-		'</h3>');
+	var name = marker.title;
+	var id = marker.id;
+	var nameElem = eval(infoWindowTemplates.name);
+	var favStar = eval(infoWindowTemplates.star);
+	var content = '<div class="infowindow-main">' + nameElem + favStar +
+		'</div>';
+	infoWindow.setContent(content);
 	// call Foursquare API (runs asynchronously)
 	fourSquare(marker);
     infoWindow.marker = marker;
@@ -409,6 +432,8 @@ function openInfoWindow(marker) {
         // deselect marker if info window closed
         deselectMarker(marker);
     });
+    var $infoWindow = $(".infowindow-main")[0];
+	ko.applyBindings(viewModel, $infoWindow);
 }
 
 /**
@@ -419,24 +444,29 @@ function openInfoWindow(marker) {
 * @parameter {object} marker - Google Maps marker object
 */
 function updateInfoWindow(data, marker) {
-	var name = infoWindow.content;
-	var photoSize = img.photoSize();
-	var sizeString = photoSize + 'x' + photoSize;
-	var photoURL = data.bestPhoto.prefix + sizeString + data.bestPhoto.suffix;
-	var photo = '<img src="' + photoURL + '" alt="' + marker.title +
-		'" width="' + photoSize + '" height="' + photoSize + '">';
+	var name = marker.title;
+	var id = marker.id;
 	var icons = '';
 	var iconSize = img.iconSize();
 	data.categories.forEach(function(cat) {
-		var iconUrl = cat.icon.prefix + img.iconSize() + cat.icon.suffix;
-		icons += '<img src="' + iconUrl + '" alt="' + cat.name + '" width="' +
-		iconSize + '" height="' + iconSize + '">';
+		var iconURL = cat.icon.prefix + iconSize + cat.icon.suffix;
+		var iconName = cat.name;
+		icons += eval(infoWindowTemplates.icon);
 	});
-	var content = '<div class="infowindow"><div class="infowindow-photo">' +
-		photo + '<div class="infowindow-icons">' + icons + '</div></div>' +
-		'<div class="infowindow-main">' + name + '</div></div>';
+	var favStar = eval(infoWindowTemplates.star);
+	var photoSize = img.photoSize();
+	var sizeString = photoSize + 'x' + photoSize;
+	var photoURL = data.bestPhoto.prefix + sizeString + data.bestPhoto.suffix;
+	var nameElem = eval(infoWindowTemplates.name);
+	var photoElem = eval(infoWindowTemplates.photo);
+	var content = '<div class="infowindow"><div class="infowindow-main">' +
+		nameElem + favStar + '</div><div class="infowindow-photo">' +
+		photoElem + '<div class="infowindow-icons">' + icons + '</div></div>' +
+		'</div>';
 	infoWindow.setContent(content);
 	infoWindow.open(map, marker);
+	var $infoWindow = $(".infowindow-main")[0];
+	ko.applyBindings(viewModel, $infoWindow);
 }
 
 /**

@@ -1,8 +1,10 @@
+var $slideMenu = $('#slide-menu');
+
 /**
 * Shows DOM menu and focuses search box
 */
 function showMenu() {
-	$('#slide-menu').width(240);
+	$slideMenu.width(240);
 	// delay search box focus due to some browsers canceling CSS transitions
 	// halfway through
 	window.setTimeout(function() {
@@ -14,7 +16,7 @@ function showMenu() {
 * Hides DOM menu
 */
 function hideMenu() {
-	$('#slide-menu').width(0);
+	$slideMenu.width(0);
 }
 
 // binds menu show and hide buttons to respective functions

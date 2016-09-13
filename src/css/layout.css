@@ -122,6 +122,9 @@ a {
 
 .star {
 	height: 16px;
+	width: 16px;
+	float: right;
+	display: block;
 }
 
 .star-fav {
@@ -142,14 +145,19 @@ a {
 .infowindow-icons {
 	display: flex;
 	background-color: #4682B4;
+	width: 200px;
 }
 
 .infowindow-main {
-	display: block;
+	display: inline-block;
+	padding: 5px 0;
+	width: 100%;
 }
 
 .infowindow-title {
 	display: inline-block;
+	margin: 0 5px 0 0;
+	font-size: 18px;
 }
 
 .credits {
