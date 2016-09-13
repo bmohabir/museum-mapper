@@ -114,6 +114,7 @@ page load when `showMenu` is called */
 
 .list-item-text > a {
 	color: gray;
+	padding: 2px 0 0 0;
 }
 
 .list-item-text {
@@ -130,15 +131,16 @@ page load when `showMenu` is called */
 	height: 16px;
 	width: 16px;
 	float: left;
+	margin: -2px 0 0 0;
 }
 
 .star-fav {
-	font-size: 16px;
+	font-size: 17px;
 	color: #FFD700;
 }
 
 .star-def {
-	font-size: 15px;
+	font-size: 16px;
 	color: gray;
 }
 
@@ -161,8 +163,8 @@ page load when `showMenu` is called */
 
 .infowindow-title {
 	display: inline-block;
-	margin: 0 0 0 5px;
-	font-size: 18px;
+	margin: auto 0 auto 5px;
+	font-size: 16px;
 }
 
 .credits {
