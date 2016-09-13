@@ -42,7 +42,7 @@ var img = {
 	*/
 	photoSize: function() {
 		// TODO: media query logic
-		return 200;
+		return 120;
 	},
 	/**
 	* Calculates desired Foursquare icon size based on viewport size
@@ -460,9 +460,8 @@ function updateInfoWindow(data, marker) {
 	var nameElem = eval(infoWindowTemplates.name);
 	var photoElem = eval(infoWindowTemplates.photo);
 	var content = '<div class="infowindow"><div class="infowindow-main">' +
-		nameElem + favStar + '</div><div class="infowindow-photo">' +
-		photoElem + '<div class="infowindow-icons">' + icons + '</div></div>' +
-		'</div>';
+		nameElem + favStar + '</div><div class="infowindow-icons">' + icons +
+		'</div><div class="infowindow-photo">' + photoElem + '</div></div>';
 	infoWindow.setContent(content);
 	infoWindow.open(map, marker);
 	var $infoWindow = $(".infowindow-main")[0];
