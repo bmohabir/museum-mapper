@@ -9,15 +9,6 @@ var ViewModel = function() {
 	var self = this;
 
 	/**
-	* Populates `model.museums` using `model.museumsData`
-	*/
-	(function init() {
-		model.museumsData.forEach(function(museum, id) {
-			model.museums.push(new Museum(museum, id));
-		});
-	})();
-
-	/**
 	* Bound to DOM search box input
 	*/
 	self.searchQuery = ko.observable('');
@@ -46,12 +37,15 @@ var ViewModel = function() {
 				vM.push(museum);
 			}
 		});
+
 		// check if results have changed to avoid unnecessary updates
 		if (!arraysEqual(vIDs(), this.lastResults)) {
+			// pass results to marker handler
 			filterMarkers(vIDs());
 			this.lastResults = vIDs();
 			return vM();
 		}
+
 		return vM();
 	}, self);
 	/**
@@ -83,5 +77,5 @@ var ViewModel = function() {
 * Contains viewModel object
 */
 var viewModel = new ViewModel();
-// initializes the viewmodel
+// initializes the viewmodel when DOM is ready
 $(ko.applyBindings(viewModel));

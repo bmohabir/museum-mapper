@@ -123,8 +123,7 @@ a {
 .star {
 	height: 16px;
 	width: 16px;
-	float: right;
-	display: block;
+	float: left;
 }
 
 .star-fav {
@@ -156,7 +155,7 @@ a {
 
 .infowindow-title {
 	display: inline-block;
-	margin: 0 5px 0 0;
+	margin: 0 0 0 5px;
 	font-size: 18px;
 }
 

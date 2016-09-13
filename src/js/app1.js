@@ -16,8 +16,8 @@ var markerIcon = {
 
 /**
 * Stores HTML templates for info window content
-* To use, simply call `eval` on the property containing the template you want to
-* use inside a scope where the placeholders have been defined
+* To use, simply call `eval` on the property containing the template you want
+* to use inside a scope where the placeholders have been defined
 */
 var infoWindowTemplates = {
 	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
@@ -38,7 +38,7 @@ var infoWindowTemplates = {
 var img = {
 	/**
 	* Calculates desired Foursquare photo size based on viewport size
-	* @returns {number}
+	* @returns {number} - side dimension in pixels
 	*/
 	photoSize: function() {
 		// TODO: media query logic
@@ -46,7 +46,7 @@ var img = {
 	},
 	/**
 	* Calculates desired Foursquare icon size based on viewport size
-	* @returns {number}
+	* @returns {number} - side dimension in pixels
 	*/
 	iconSize: function() {
 		// TODO: media query logic
@@ -351,15 +351,18 @@ function initMarkers() {
         	position: position,
         	title: title,
          	animation: google.maps.Animation.DROP,
+         	// storing index is useful for identifying individually
+         	// passed marker objects
          	id: id,
          	icon: markerIcon.def,
+         	// used to update and revert icon appearance when `selectMarker` and
+         	// `deselectMarker` are called
          	icons: {
          		def: markerIcon.def,
          		bounce: markerIcon.def_bounce
          	}
     	});
-
-    	// set marker click to open infowindow
+    	// set marker click functionality
     	marker.addListener('click', function() {
         	selectMarker(this);
     	});
@@ -384,24 +387,26 @@ function initMarkers() {
 * @parameter {object} clickItem - marker or museum object
 */
 function selectMarker(clickItem) {
+	// allows either a museum or marker to trigger the marker selection
 	var marker = markers[clickItem.id];
 	var currentMarker = infoWindow.marker;
 
+	// no need to select an already selected marker
 	if (currentMarker == marker) {
-		// no need to select an already selected marker
 		return;
 	} else if (currentMarker) {
 		// ensure only one marker is selected at a time
 		deselectMarker(currentMarker);
 	}
 
+	// animate marker and use highlighted icon
 	marker.setAnimation(google.maps.Animation.BOUNCE);
 	marker.setIcon(marker.icons.bounce);
 	openInfoWindow(marker);
 }
 
 /**
-* Cancels animation and closes infowindow for selected marker
+* Cancels animation, reverts icon and closes infowindow for selected marker
 * @parameter {object} marker - clicked marker object
 */
 function deselectMarker(marker) {
@@ -412,8 +417,8 @@ function deselectMarker(marker) {
 }
 
 /**
-* Opens info window containing `title` property of passed marker, ensuring only
-* one info window is open at a time and calls `fourSquare` API function
+* Opens info window, ensuring only one info window is open at a time,
+* calls `fourSquare` API function
 * @parameter {object} marker - a Google Maps marker object
 */
 function openInfoWindow(marker) {
@@ -424,14 +429,18 @@ function openInfoWindow(marker) {
 	var content = '<div class="infowindow-main">' + nameElem + favStar +
 		'</div>';
 	infoWindow.setContent(content);
+
 	// call Foursquare API (runs asynchronously)
 	fourSquare(marker);
     infoWindow.marker = marker;
     infoWindow.open(map, marker);
+
+    // deselect marker if info window closed
     infoWindow.addListener('closeclick', function() {
-        // deselect marker if info window closed
         deselectMarker(marker);
     });
+
+    // enables fav star KO binding, needed for dynamically injected elements
     var $infoWindow = $(".infowindow-main")[0];
 	ko.applyBindings(viewModel, $infoWindow);
 }
@@ -444,6 +453,8 @@ function openInfoWindow(marker) {
 * @parameter {object} marker - Google Maps marker object
 */
 function updateInfoWindow(data, marker) {
+	// for debugging (temporary)
+	console.log(data);
 	var name = marker.title;
 	var id = marker.id;
 	var icons = '';
@@ -458,12 +469,15 @@ function updateInfoWindow(data, marker) {
 	var sizeString = photoSize + 'x' + photoSize;
 	var photoURL = data.bestPhoto.prefix + sizeString + data.bestPhoto.suffix;
 	var nameElem = eval(infoWindowTemplates.name);
-	var photoElem = eval(infoWindowTemplates.photo);
+	var photo = eval(infoWindowTemplates.photo);
 	var content = '<div class="infowindow"><div class="infowindow-main">' +
 		nameElem + favStar + '</div><div class="infowindow-icons">' + icons +
-		'</div><div class="infowindow-photo">' + photoElem + '</div></div>';
+		'</div><div class="infowindow-photo">' + photo + '</div></div>';
 	infoWindow.setContent(content);
+	// re-open info window to accomodate size and position
 	infoWindow.open(map, marker);
+
+	// enables fav star KO binding, needed for dynamically injected elements
 	var $infoWindow = $(".infowindow-main")[0];
 	ko.applyBindings(viewModel, $infoWindow);
 }
@@ -481,6 +495,7 @@ function fourSquare(marker) {
 	var urlPrefix = 'https://api.foursquare.com/v2/venues/';
 	var url = urlPrefix + venueID +	'?client_id=' + client_id +
 		'&client_secret=' + client_secret +	'&v=' + version;
+
 	$.get({
 		url: url,
 		success: function(data) {
@@ -502,6 +517,7 @@ function fourSquare(marker) {
 */
 function markerToggleFav(clickItem, status) {
 	var marker = markers[clickItem.id];
+
 	if (status) {
 		marker.icons.def = markerIcon.fav;
 		marker.icons.bounce = markerIcon.fav_bounce;

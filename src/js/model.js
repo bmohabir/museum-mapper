@@ -6,9 +6,13 @@
 */
 var Museum = function(obj, id) {
 	this.name = obj.name;
+	// venue IDs for Foursquare and Eventful
 	this.fsID = obj.fsID;
 	this.evID = obj.evID;
+	// fav status
 	this.fav = ko.observable(false);
+	// storing index is useful for identifying an
+	// individually passed museum object
 	this.id = id;
 	this.toggleFav = function() {
 		this.fav(!this.fav());
@@ -20,6 +24,11 @@ var Museum = function(obj, id) {
 * @constructor
 */
 var Model = function() {
+	/**
+	* For keeping track of `this` (used by init function)
+	*/
+	var self = this;
+
 	/**
 	* Contains museum data objects
 	*/
@@ -81,9 +90,18 @@ var Model = function() {
 	    }
 	];
 	/**
-	* Contains `Museum` objects, populated by `viewModel.init`
+	* Contains `Museum` objects, populated by `init`
 	*/
 	this.museums = [];
+
+	/**
+	* Populates `museums` using `museumsData`
+	*/
+	(function init() {
+		self.museumsData.forEach(function(museum, id) {
+			self.museums.push(new Museum(museum, id));
+		});
+	})();
 };
 
 /**
