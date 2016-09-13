@@ -24,14 +24,13 @@ function hideMenu() {
 }
 
 /**
-* Attempts to determine if app view is portrait or landscape
-* @returns {string} - 'portrait' or 'landscape'
+* Determines if viewport is narrow for dynamic layout
+* @returns {boolean}
 */
-function getOrientation() {
-	var height = window.innerHeight;
+function isNarrow() {
 	var width = window.innerWidth;
 
-	return (width > height) ? 'landscape' : 'portrait';
+	return (width < 768) ? true : false;
 }
 
 // binds menu show and hide buttons to respective functions
@@ -40,3 +39,13 @@ $hideMenu.click(hideMenu);
 
 // binds reset map button
 $mapReset.click(mapReset);
+
+// complements media query for initial menu state and search box focus
+// (prevents CSS media query opening and closing menu without user input)
+$(function() {
+	if (!isNarrow()) {
+		showMenu();
+	} else {
+		hideMenu();
+	}
+});

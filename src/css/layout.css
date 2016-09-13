@@ -65,7 +65,13 @@ a {
     justify-content: space-between;
 }
 
-/* TODO: media query to open menu on large screen by default */
+/* start with menu open on large screens, avoids transition lag during
+page load when `showMenu` is called */
+@media (min-width: 768px) {
+	.menu {
+		width: 240px;
+	}
+}
 
 .search-area {
 	margin: 0 0 10px 0;

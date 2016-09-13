@@ -49,13 +49,14 @@ var ViewModel = function() {
 		return vM();
 	}, self);
 	/**
-	* Fires when bound DOM list item is clicked, calls `menuSelMarker` with
-	* museum `id` property as parameter, also hides the menu if in portrait
+	* Fires when bound DOM list item is clicked, calls `menuSelMarker`
+	* with museum `id` property as parameter, also hides the menu if
+	* view is too narrow
 	*/
 	self.clickItem = function(museum) {
 		selectMarker(museum);
 
-		if (getOrientation() === 'portrait') {
+		if (isNarrow()) {
 			hideMenu();
 		}
 	};
