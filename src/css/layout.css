@@ -166,7 +166,18 @@ a {
 	font-size: 12px;
 }
 
-.credits-text{
+.credits-text {
 	font-size: 12px;
 	padding: 5px;
+}
+
+.map-reset {
+	position: fixed;
+	right: 20px;
+	bottom: 25px;
+	z-index: 98;
+	background: #3A4045;
+	color: white;
+	border: none;
+	padding: 5px 8px;
 }

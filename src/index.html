@@ -43,6 +43,7 @@
 				</div>
 			</div>
 			<div class="app" id="map"></div>
+			<input type="button" class="map-reset" value="Reset View">
 		</div>
 		<!-- build:libjs js/lib.js -->
 		<script src="lib/jquery.js"></script>
@@ -55,12 +56,13 @@
 		<script src="js/app2.js"></script>
 		<!-- endbuild -->
 		<script>
-			var map, infoWindow;
+			var map, bounds, infoWindow;
+			var $map = $('#map')[0];
 
 			// callback function for Google Maps API
 			// loads map in '#map' div once API is loaded
 			function initMap() {
-				map = new google.maps.Map($('#map')[0], {
+				map = new google.maps.Map($map, {
 					center: {lat: 40.7413549, lng: -73.99802439999996},
 					zoom: 13,
 					// hide style/zoom/streetview UI

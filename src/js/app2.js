@@ -50,10 +50,14 @@ var ViewModel = function() {
 	}, self);
 	/**
 	* Fires when bound DOM list item is clicked, calls `menuSelMarker` with
-	* museum `id` property as parameter
+	* museum `id` property as parameter, also hides the menu if in portrait
 	*/
 	self.clickItem = function(museum) {
 		selectMarker(museum);
+
+		if (getOrientation() === 'portrait') {
+			hideMenu();
+		}
 	};
 	/**
 	* Fires when bound DOM list star is clicked, toggles fav status in list

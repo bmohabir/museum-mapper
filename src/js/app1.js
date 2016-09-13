@@ -371,7 +371,7 @@ function initMarkers() {
 	});
 
 	// for adjusting viewport to contain all visible markers
-	var bounds = new google.maps.LatLngBounds();
+	bounds = new google.maps.LatLngBounds();
 
     markers.forEach(function(marker) {
     	// add marker to map (make visible)
@@ -547,6 +547,13 @@ function filterMarkers(visibleIDs) {
 			marker.setMap(null);
 		}
 	});
+}
+
+/**
+* Resets map view
+*/
+function mapReset() {
+	map.fitBounds(bounds);
 }
 
 /**

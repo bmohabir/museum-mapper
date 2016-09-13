@@ -84,7 +84,7 @@ var Model = function() {
 	    },
 	    {
 	    	name: 'Solomon R. Guggenheim Museum',
-	    	location: {lat: 40.7289796, lng: -73.9589706},
+	    	location: {lat: 40.7829796, lng: -73.9589706},
 	    	fsID: '41706480f964a520a51d1fe3',
 	    	evID: 'V0-001-000439048-7'
 	    }
