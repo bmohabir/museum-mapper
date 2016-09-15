@@ -155,7 +155,7 @@ page load when `showMenu` is called */
 	width: 100%;
 }
 
-.infowindow-main {
+.infowindow-head {
 	display: inline-block;
 	padding: 5px 0;
 	width: 100%;

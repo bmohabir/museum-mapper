@@ -21,11 +21,11 @@ var markerIcon = {
 */
 var infoWindowTemplates = {
 	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
-	photo: `\`<img src="\${photoURL}" alt="\${name}"\` +
-		\`width="\${photoSize}" height="\${photoSize}">\``,
-	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}"\` +
+	photo: `\`<div class="infowindow-photo"><img src="\${photoURL}" \` +
+		\`alt="\${name}" width="\${photoSize}" height="\${photoSize}"></div>\``,
+	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
-	star: `\`<div class="star"><a class="star-fav" href="#"\` +
+	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
 		\`$root.toggleFav($root.getMuseum(\${id}))">★</a><a class="star-def"\` +
 		\` href="#" data-bind="visible: !$root.getMuseum(\${id}).fav(), \` +
@@ -418,7 +418,7 @@ function deselectMarker(marker) {
 
 /**
 * Opens info window, ensuring only one info window is open at a time,
-* calls `fourSquare` API function
+* calls `fourSquare` and `eventFul` API functions
 * @parameter {object} marker - a Google Maps marker object
 */
 function openInfoWindow(marker) {
@@ -426,14 +426,16 @@ function openInfoWindow(marker) {
 	var id = marker.id;
 	var nameElem = eval(infoWindowTemplates.name);
 	var favStar = eval(infoWindowTemplates.star);
-	var content = '<div class="infowindow-main">' + nameElem + favStar +
-		'</div>';
+	var content = '<div class="infowindow-head">' +
+		nameElem + favStar + '</div>';
 	infoWindow.setContent(content);
-
-	// call Foursquare API (runs asynchronously)
-	fourSquare(marker);
     infoWindow.marker = marker;
     infoWindow.open(map, marker);
+
+    // call Foursquare API (runs asynchronously)
+	fourSquare(marker);
+    // call Eventful API (runs asynchronously)
+    eventFul(marker);
 
     // deselect marker if info window closed
     infoWindow.addListener('closeclick', function() {
@@ -441,8 +443,8 @@ function openInfoWindow(marker) {
     });
 
     // enables fav star KO binding, needed for dynamically injected elements
-    var $infoWindow = $(".infowindow-main")[0];
-	ko.applyBindings(viewModel, $infoWindow);
+    var $infoWindowHead = $(".infowindow-head")[0];
+	ko.applyBindings(viewModel, $infoWindowHead);
 }
 
 /**
@@ -455,6 +457,7 @@ function openInfoWindow(marker) {
 function updateInfoWindow(data, marker) {
 	// for debugging (temporary)
 	console.log(data);
+	var current = infoWindow.content;
 	var name = marker.title;
 	var id = marker.id;
 	var icons = '';
@@ -464,22 +467,21 @@ function updateInfoWindow(data, marker) {
 		var iconName = cat.name;
 		icons += eval(infoWindowTemplates.icon);
 	});
-	var favStar = eval(infoWindowTemplates.star);
+	//var favStar = eval(infoWindowTemplates.star);
 	var photoSize = img.photoSize();
 	var sizeString = photoSize + 'x' + photoSize;
 	var photoURL = data.bestPhoto.prefix + sizeString + data.bestPhoto.suffix;
-	var nameElem = eval(infoWindowTemplates.name);
+	//var nameElem = eval(infoWindowTemplates.name);
 	var photo = eval(infoWindowTemplates.photo);
-	var content = '<div class="infowindow"><div class="infowindow-main">' +
-		nameElem + favStar + '</div><div class="infowindow-icons">' + icons +
-		'</div><div class="infowindow-photo">' + photo + '</div></div>';
+	var content = current + '<div class="infowindow-icons">' + icons +
+		'</div>' + photo;
 	infoWindow.setContent(content);
 	// re-open info window to accomodate size and position
 	infoWindow.open(map, marker);
 
 	// enables fav star KO binding, needed for dynamically injected elements
-	var $infoWindow = $(".infowindow-main")[0];
-	ko.applyBindings(viewModel, $infoWindow);
+	var $infoWindowHead = $(".infowindow-head")[0];
+	ko.applyBindings(viewModel, $infoWindowHead);
 }
 
 /**
@@ -508,6 +510,32 @@ function fourSquare(marker) {
 		// TODO: better error handling
 		alert('Error loading Foursquare data');
 	});
+}
+
+/**
+* Gets Eventful API venue information for a museum and passes it to
+* `updateInfoWindow` (runs asynchronously) **TODO**
+* @parameter {object} marker - Google Maps marker object
+*/
+function eventFul(marker) {
+	var venueID = viewModel.getMuseum(marker.id).evID;
+	var app_key = '52bmjJbHHhT48jbh'
+	var urlPrefix = 'http://api.eventful.com/json/events/search?app_key=';
+	var location = '&location=' + venueID;
+	var url = urlPrefix + app_key + location;
+
+	$.get({
+		url: url,
+		success: function(data) {
+			var result = data.events.event;
+			console.log(result);
+		},
+		dataType: 'json',
+		timeout: 5000
+	}).fail(function() {
+		// TODO: better error handling
+		alert('Error loading Eventful data');
+	})
 }
 
 /**
