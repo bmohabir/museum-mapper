@@ -103,21 +103,29 @@ var ViewModel = function() {
 		return model.museums[id];
 	};
 	/**
-	* Fades out list item before removal
+	* Animates removing item from list
 	* @parameter {object} element
 	*/
 	self.hideListItem = function(element) {
 		if (element.nodeType === 1) {
-			$(element).fadeOut();
+			$(element).css('opacity', 1)
+				.slideUp('fast')
+				.animate({ opacity: 0 }, { queue: false, duration: 'slow'},
+					function() {
+						$(element).remove();
+					}
+				);
 		}
 	};
 	/**
-	* Fades in list item after addition
+	* Animates adding item to list
 	* @parameter {object} element
 	*/
 	self.showListItem = function(element) {
 		if (element.nodeType === 1) {
-			$(element).hide().fadeIn();
+			$(element).css('opacity', 0)
+				.slideDown('fast')
+				.animate({ opacity: 1 }, { queue: false, duration: 'slow'});
 		}
 	};
 };

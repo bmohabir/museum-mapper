@@ -521,7 +521,7 @@ function fourSquare(marker) {
 function eventFul(marker) {
 	var venueID = viewModel.getMuseum(marker.id).evID;
 	var app_key = '52bmjJbHHhT48jbh'
-	var urlPrefix = 'http://api.eventful.com/json/events/search?app_key=';
+	var urlPrefix = 'https://api.eventful.com/json/events/search?app_key=';
 	var location = '&location=' + venueID;
 	var url = urlPrefix + app_key + location;
 
