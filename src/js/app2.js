@@ -108,13 +108,9 @@ var ViewModel = function() {
 	*/
 	self.hideListItem = function(element) {
 		if (element.nodeType === 1) {
-			$(element).css('opacity', 1)
-				.slideUp('fast')
-				.animate({ opacity: 0 }, { queue: false, duration: 'fast'},
-					function() {
-						$(element).remove();
-					}
-				);
+			$(element).slideUp('fast', function() {
+				$(element).remove();
+			});
 		}
 	};
 	/**
@@ -123,7 +119,7 @@ var ViewModel = function() {
 	*/
 	self.showListItem = function(element) {
 		if (element.nodeType === 1) {
-			$(element).css('opacity', 0)
+			$(element).hide().css('opacity', 0).slideDown('fast')
 				.animate({ opacity: 1 }, { queue: false, duration: 'slow'});
 		}
 	};
