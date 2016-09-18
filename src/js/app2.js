@@ -16,37 +16,63 @@ var ViewModel = function() {
 	* Stores most recent search results for comparing with current results
 	*/
 	self.lastResults = [];
+	self.lastFavs = [];
+	self.lastNonFavs = [];
 	/**
 	* Computes to results for current `searchQuery`, calls `filterMarkers`
 	*/
 	self.visibleMuseums = ko.computed(function() {
-		// so we can use `ko.observableArray.remove`
-		var vM = ko.observableArray();
-		var vIDs = ko.observableArray();
+		var vM = [];
+		var vIDs = [];
 		// search should be case insensitive
 		var searchQuery = this.searchQuery().toLowerCase();
 
 		model.museums.forEach(function(museum, id) {
 			var museumName = museum.name.toLowerCase();
 
-			if (museumName.search(searchQuery) == -1) {
-				vIDs.remove(id);
-				vM.remove(museum);
-			} else {
+			if (museumName.search(searchQuery) !== -1) {
 				vIDs.push(id);
 				vM.push(museum);
 			}
 		});
 
 		// check if results have changed to avoid unnecessary updates
-		if (!arraysEqual(vIDs(), this.lastResults)) {
+		if (!arraysEqual(vIDs, this.lastResults)) {
 			// pass results to marker handler
-			filterMarkers(vIDs());
-			this.lastResults = vIDs();
-			return vM();
+			filterMarkers(vIDs);
+			this.lastResults = vIDs;
+			return vM;
 		}
 
-		return vM();
+		return vM;
+	}, self);
+	/**
+	* Computes to results for current `searchQuery` where `fav` is `true`
+	*/
+	self.visibleFavs = ko.computed(function() {
+		var vM = [];
+
+		this.visibleMuseums().forEach(function(museum) {
+			if (museum.fav()) {
+				vM.push(museum);
+			}
+		});
+
+		return vM;
+	}, self);
+	/**
+	* Computes to results for current `searchQuery` where `fav` is `false`
+	*/
+	self.visibleNonFavs = ko.computed(function() {
+		var vM = [];
+
+		this.visibleMuseums().forEach(function(museum) {
+			if (!museum.fav()) {
+				vM.push(museum);
+			}
+		});
+
+		return vM;
 	}, self);
 	/**
 	* Fires when bound DOM list item is clicked, calls `menuSelMarker`
@@ -75,6 +101,24 @@ var ViewModel = function() {
 	*/
 	self.getMuseum = function(id) {
 		return model.museums[id];
+	};
+	/**
+	* Fades out list item before removal
+	* @parameter {object} element
+	*/
+	self.hideListItem = function(element) {
+		if (element.nodeType === 1) {
+			$(element).fadeOut();
+		}
+	};
+	/**
+	* Fades in list item after addition
+	* @parameter {object} element
+	*/
+	self.showListItem = function(element) {
+		if (element.nodeType === 1) {
+			$(element).hide().fadeIn();
+		}
 	};
 };
 

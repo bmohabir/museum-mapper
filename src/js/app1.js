@@ -27,9 +27,10 @@ var infoWindowTemplates = {
 		\`height="\${iconSize}">\``,
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
-		\`$root.toggleFav($root.getMuseum(\${id}))">★</a><a class="star-def"\` +
-		\` href="#" data-bind="visible: !$root.getMuseum(\${id}).fav(), \` +
-		\`click: $root.toggleFav($root.getMuseum(\${id}))">☆</a></div>\``
+		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">★</a>\` +
+		\`<a class="star-def" href="#" data-bind="visible: \` +
+		\`!$root.getMuseum(\${id}).fav(), click: function() { \` +
+		\`$root.toggleFav($root.getMuseum(\${id})) }">☆</a></div>\``
 };
 
 /**
@@ -444,7 +445,7 @@ function openInfoWindow(marker) {
 
     // enables fav star KO binding, needed for dynamically injected elements
     var $infoWindowHead = $(".infowindow-head")[0];
-	ko.applyBindings(viewModel, $infoWindowHead);
+	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
 }
 
 /**
@@ -481,7 +482,7 @@ function updateInfoWindow(data, marker) {
 
 	// enables fav star KO binding, needed for dynamically injected elements
 	var $infoWindowHead = $(".infowindow-head")[0];
-	ko.applyBindings(viewModel, $infoWindowHead);
+	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
 }
 
 /**
