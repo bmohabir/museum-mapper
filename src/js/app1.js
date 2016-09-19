@@ -15,16 +15,28 @@ var markerIcon = {
 };
 
 /**
-* Stores HTML templates for info window content
-* To use, simply call `eval` on the property containing the template you want
-* to use inside a scope where the placeholders have been defined
+* Stores HTML template strings for info window content
+* For string literal templates, simply call `eval` on the property containing
+* the template you want to use from within a scope where the placeholders have
+* been defined
 */
 var infoWindowTemplates = {
+	root: '<div class="infowindow"></div>',
+	head: '<div class="infowindow-head"></div>',
+	foursquare: '<div class="foursquare center-text">Loading Foursquare data ' +
+		'. . .</div>',
+	eventful: '<div class="eventful center-text">Loading Eventful data . . .' +
+		'</div>',
 	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
 	photo: `\`<div class="infowindow-photo"><img src="\${photoURL}" \` +
 		\`alt="\${name}" width="\${photoSize}" height="\${photoSize}"></div>\``,
+	icons: '<div class="infowindow-icons"></div>',
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
+	fsError: '<span class="infowindow-error">Error retrieving Foursquare ' +
+		'data.<br>Please try again later.</span>',
+	evError: '<span class="infowindow-error">Error retrieving Eventful ' +
+		'data.<br>Please try again later.</span>',
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
 		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">★</a>\` +
@@ -356,8 +368,8 @@ function initMarkers() {
          	// passed marker objects
          	id: id,
          	icon: markerIcon.def,
-         	// used to update and revert icon appearance when `selectMarker` and
-         	// `deselectMarker` are called
+         	// used to update and revert icon appearance when `selectMarker`
+         	// and `deselectMarker` are called
          	icons: {
          		def: markerIcon.def,
          		bounce: markerIcon.def_bounce
@@ -418,17 +430,25 @@ function deselectMarker(marker) {
 }
 
 /**
-* Opens info window, ensuring only one info window is open at a time,
-* calls `fourSquare` and `eventFul` API functions
+* Opens info window with title, fav star and loading message and calls
+* `fourSquare` and `eventFul` API functions, ensures only one
+* info window is open at a time
 * @parameter {object} marker - a Google Maps marker object
 */
 function openInfoWindow(marker) {
 	var name = marker.title;
 	var id = marker.id;
-	var nameElem = eval(infoWindowTemplates.name);
-	var favStar = eval(infoWindowTemplates.star);
-	var content = '<div class="infowindow-head">' +
-		nameElem + favStar + '</div>';
+	var $name = $(eval(infoWindowTemplates.name));
+	var $favStar = $(eval(infoWindowTemplates.star));
+	var $head = $(infoWindowTemplates.head).append($name)
+		.append($favStar);
+	var $foursquare = $(infoWindowTemplates.foursquare);
+	var $eventful = $(infoWindowTemplates.eventful);
+	var $root = $(infoWindowTemplates.root).append($head)
+		.append($foursquare)
+		.append($eventful);
+	var content = $root[0].outerHTML;
+
 	infoWindow.setContent(content);
     infoWindow.marker = marker;
     infoWindow.open(map, marker);
@@ -454,8 +474,8 @@ function openInfoWindow(marker) {
 * @parameter {object} data - `venue` object subproperty of Foursquare API
 * response object
 * @parameter {object} marker - Google Maps marker object
-*/
-function updateInfoWindow(data, marker) {
+*
+function updateInfoWindowOld(data, marker) {
 	// for debugging (temporary)
 	console.log(data);
 	var current = infoWindow.content;
@@ -468,11 +488,9 @@ function updateInfoWindow(data, marker) {
 		var iconName = cat.name;
 		icons += eval(infoWindowTemplates.icon);
 	});
-	//var favStar = eval(infoWindowTemplates.star);
 	var photoSize = img.photoSize();
 	var sizeString = photoSize + 'x' + photoSize;
 	var photoURL = data.bestPhoto.prefix + sizeString + data.bestPhoto.suffix;
-	//var nameElem = eval(infoWindowTemplates.name);
 	var photo = eval(infoWindowTemplates.photo);
 	var content = current + '<div class="infowindow-icons">' + icons +
 		'</div>' + photo;
@@ -483,6 +501,47 @@ function updateInfoWindow(data, marker) {
 	// enables fav star KO binding, needed for dynamically injected elements
 	var $infoWindowHead = $(".infowindow-head")[0];
 	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
+}*/
+
+/**
+* Updates open info window sections with data passed in by APIs (if successful),
+* or error message
+* @parameter {string} type - 'foursquare' or 'eventful'
+* @parameter {string} status - 'ok' or 'error'
+* @parameter {object} data - Foursquare or Eventful API response data (if any)
+*/
+function updateInfoWindow(type, status, data) {
+	var marker = infoWindow.marker;
+	var name = marker.title;
+	var id = marker.id;
+
+	if (type === 'foursquare') {
+		var $foursquare = $('.foursquare').text('');
+
+		if (status === 'ok') {
+			var $icons = $(infoWindowTemplates.icons);
+			var iconSize = img.iconSize();
+			data.categories.forEach(function(cat) {
+				var iconURL = cat.icon.prefix + iconSize + cat.icon.suffix;
+				var iconName = cat.name;
+				var $icon = $(eval(infoWindowTemplates.icon));
+				$icons.append($icon);
+			});
+			var photoSize = img.photoSize();
+			var sizeString = photoSize + 'x' + photoSize;
+			var photoURL = data.bestPhoto.prefix + sizeString +
+				data.bestPhoto.suffix;
+			var $photo = $(eval(infoWindowTemplates.photo));
+			$foursquare.removeClass('center-text')
+				.append($icons)
+				.append($photo);
+		} else if (status === 'error') {
+			var $error = $(infoWindowTemplates.fsError);
+			$foursquare.append($error);
+		}
+	}
+	// re-open info window to accomodate size and position
+	infoWindow.open(map, marker);
 }
 
 /**
@@ -503,13 +562,13 @@ function fourSquare(marker) {
 		url: url,
 		success: function(data) {
 			var result = data.response.venue;
-			updateInfoWindow(result, marker);
+			console.log(result);
+			updateInfoWindow('foursquare', 'ok', result);
 		},
 		dataType: 'json',
 		timeout: 5000
 	}).fail(function() {
-		// TODO: better error handling
-		alert('Error loading Foursquare data');
+		updateInfoWindow('foursquare', 'error');
 	});
 }
 
@@ -530,13 +589,13 @@ function eventFul(marker) {
 		success: function(data) {
 			var result = data.events.event;
 			console.log(result);
+			updateInfoWindow('eventful', 'ok', result);
 		},
 		dataType: 'json',
 		timeout: 5000
 	}).fail(function() {
-		// TODO: better error handling
-		alert('Error loading Eventful data');
-	})
+		updateInfoWindow('eventful', 'error');
+	});
 }
 
 /**
