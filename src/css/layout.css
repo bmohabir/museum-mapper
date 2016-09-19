@@ -189,3 +189,16 @@ page load when `showMenu` is called */
 	border: none;
 	padding: 5px 8px;
 }
+
+.eventful-badge,
+.eventful-badge * {
+  color: #CCC;
+  margin: 0;
+  display: inline-block;
+}
+
+.eventful-small {
+  width: 95px;
+  font-size: 11px;
+  line-height: 11px;
+}
