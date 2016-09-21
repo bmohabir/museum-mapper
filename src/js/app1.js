@@ -33,10 +33,10 @@ var infoWindowTemplates = {
 	icons: '<div class="infowindow-icons"></div>',
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
-	fsError: '<span class="infowindow-error">Error retrieving Foursquare ' +
-		'data.<br>Please try again later.</span>',
-	evError: '<span class="infowindow-error">Error retrieving Eventful ' +
-		'data.<br>Please try again later.</span>',
+	fsError: `\`<span class="infowindow-error">Error retrieving Foursquare \` +
+		\`data (\${errorCode} \${errorMsg}).</span>\``,
+	evError: `\`<span class="infowindow-error">Error retrieving Eventful \` +
+		\`data (\${errorCode} \${errorMsg}).</span>\``,
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
 		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">★</a>\` +
@@ -518,7 +518,7 @@ function updateInfoWindow(type, status, data) {
 	if (type === 'foursquare') {
 		var $foursquare = $('.foursquare').text('');
 
-		if (status === 'ok') {
+		if (status === 'success') {
 			var $icons = $(infoWindowTemplates.icons);
 			var iconSize = img.iconSize();
 			data.categories.forEach(function(cat) {
@@ -535,8 +535,10 @@ function updateInfoWindow(type, status, data) {
 			$foursquare.removeClass('center-text')
 				.append($icons)
 				.append($photo);
-		} else if (status === 'error') {
-			var $error = $(infoWindowTemplates.fsError);
+		} else if (status === 'fail') {
+			var errorCode = data.error > 0 ? data.error : 'Unknown';
+			var errorMsg = data.text;
+			var $error = $(eval(infoWindowTemplates.fsError));
 			$foursquare.append($error);
 		}
 	}
@@ -560,15 +562,25 @@ function fourSquare(marker) {
 
 	$.get({
 		url: url,
+		dataType: 'json',
+		timeout: 10000,
 		success: function(data) {
 			var result = data.response.venue;
-			console.log(result);
-			updateInfoWindow('foursquare', 'ok', result);
+			//console.log(result);
+			updateInfoWindow('foursquare', 'success', result);
 		},
-		dataType: 'json',
-		timeout: 5000
-	}).fail(function() {
-		updateInfoWindow('foursquare', 'error');
+		error: function(data) {
+			var result = {
+				error: data.status,
+				text: data.statusText
+			};
+			if (data.responseJSON) {
+				var type = data.responseJSON.meta.errorType;
+				var detail = data.responseJSON.meta.errorDetail;
+				console.log('Foursquare API error ' + type + ': ' + detail);
+			}
+			updateInfoWindow('foursquare', 'fail', result);
+		}
 	});
 }
 
@@ -586,15 +598,30 @@ function eventFul(marker) {
 
 	$.get({
 		url: url,
-		success: function(data) {
-			var result = data.events.event;
-			console.log(result);
-			updateInfoWindow('eventful', 'ok', result);
-		},
 		dataType: 'jsonp',
-		timeout: 5000
-	}).fail(function() {
-		updateInfoWindow('eventful', 'error');
+		timeout: 10000,
+		success: function(data) {
+			var result = data.events ? data.events.event : null;
+			console.log(result);
+			// JSONP means bad requests can still trigger success instead
+			// of fail condition, so we'll check the response directly
+			result ? (
+				updateInfoWindow('eventful', 'success', result)
+			) : (
+				console.log('Eventful API error ' + data.error + ': ' +
+					data.description);
+				//updateInfoWindow('eventful', 'error', ...);
+				// TODO: Eventful specific response handler
+			);
+		},
+		error: function(data) {
+			var result = {
+				error: data.status,
+				text: data.statusText
+			};
+			updateInfoWindow('eventful', 'fail', result);
+			console.log(result);
+		}
 	});
 }
 
