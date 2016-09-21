@@ -591,7 +591,7 @@ function eventFul(marker) {
 			console.log(result);
 			updateInfoWindow('eventful', 'ok', result);
 		},
-		dataType: 'json',
+		dataType: 'jsonp',
 		timeout: 5000
 	}).fail(function() {
 		updateInfoWindow('eventful', 'error');
