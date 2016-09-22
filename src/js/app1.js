@@ -43,7 +43,7 @@ var infoWindowTemplates = {
 	fsLink: `\`<a href="\${fsURL}" target="_blank">Foursquare</a>\``,
 	website: `\`<div>Website: <a href="\${URL}" target="_blank">\${URL}</a>\` +
 		\`</div>\``,
-	rating: `\`<div>Rating: <span class="rating-text" style="color:\` +
+	rating: `\`<div>Foursquare Rating: <span class="rating-text" style="color:\` +
 		\`\${ratingColor}">\${rating}</span>/10</div>\``,
 	fsIcons: '<div class="foursquare-icons"></div>',
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
@@ -654,7 +654,7 @@ function fsSuccessCallback(data) {
 	var result = data.response.venue;
 
 	foursquareRenderInfo(result);
-	console.log(result); // for testing purposes
+	//console.log(result); // for testing purposes
 }
 
 /**
