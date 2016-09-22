@@ -9,8 +9,8 @@ var $mapReset = $('.map-reset');
 */
 function showMenu() {
 	$slideMenu.width(240);
-	// delay search box focus due to some browsers canceling CSS transitions
-	// halfway through
+	// delay search box focus due to some browsers canceling
+	// CSS transitions halfway through
 	window.setTimeout(function() {
 		$searchBox.focus();
 	}, 500);
@@ -43,9 +43,9 @@ $mapReset.click(mapReset);
 // complements media query for initial menu state and search box focus
 // (prevents CSS media query opening and closing menu without user input)
 $(function() {
-	if (!isNarrow()) {
-		showMenu();
-	} else {
-		hideMenu();
-	}
+	(!isNarrow()) ? (
+		showMenu()
+	) : (
+		hideMenu()
+	);
 });

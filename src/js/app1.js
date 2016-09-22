@@ -41,7 +41,7 @@ var infoWindowTemplates = {
 	facebook: `\`<a href="\${facebook}" target="_blank">Facebook</a>\``,
 	twitter: `\`<a href="\${twitter}" target="_blank">Twitter</a>\``,
 	fsLink: `\`<a href="\${fsURL}" target="_blank">Foursquare</a>\``,
-	website: `\`<div>Website: <a href="\${URL}" target="_blank">\${URL}</a>\` +
+	website: `\`<div>Website: <a href="\${url}" target="_blank">\${url}</a>\` +
 		\`</div>\``,
 	rating: `\`<div>Foursquare Rating: <span class="rating-text" style="color:\` +
 		\`\${ratingColor}">\${rating}</span>/10</div>\``,
@@ -606,7 +606,7 @@ function foursquareRenderInfo(data) {
 	var $rating = $(eval(infoWindowTemplates.rating));
 
 	// Museum website
-	var URL = data.url;
+	var url = data.url;
 	var $website = $(eval(infoWindowTemplates.website));
 
 	var $info = $(infoWindowTemplates.fsInfo).append($address)
@@ -830,18 +830,16 @@ function getEventfulData(marker) {
 function markerToggleFav(clickItem, status) {
 	var marker = markers[clickItem.id];
 
-	if (status) {
-		marker.icons.def = markerIcon.fav;
-		marker.icons.bounce = markerIcon.fav_bounce;
-	} else {
-		marker.icons.def = markerIcon.def;
-		marker.icons.bounce = markerIcon.def_bounce;
-	}
-	if (marker.animation) {
-		marker.setIcon(marker.icons.bounce);
-	} else {
-		marker.setIcon(marker.icons.def);
-	}
+	status ? (
+		marker.icons.def = markerIcon.fav,
+		marker.icons.bounce = markerIcon.fav_bounce
+	) : (
+		marker.icons.def = markerIcon.def,
+		marker.icons.bounce = markerIcon.def_bounce
+	);
+
+	marker.animation ? marker.setIcon(marker.icons.bounce) : (
+		marker.setIcon(marker.icons.def));
 }
 
 /**
