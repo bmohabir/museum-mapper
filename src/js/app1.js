@@ -862,10 +862,11 @@ function filterMarkers(visibleIDs) {
 }
 
 /**
-* Resets map view
+* Resets map view to initial state (if no infowindow open) or to
+* initial infowindow view state (if infowindow is open)
 */
 function mapReset() {
-	map.fitBounds(bounds);
+	infoWindow.marker ? refreshInfoWindow() : map.fitBounds(bounds);
 }
 
 /**
