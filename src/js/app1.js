@@ -750,7 +750,10 @@ function eventfulRenderInfo(type, data) {
 */
 function evSuccessCallback(data) {
 	if (data.events) {
-		var result = data.events.event;
+		// data.events.event contains an array of event objects for multiple
+		// events, but contains the event object itself for only one event
+		var result = Array.isArray(data.events.event) ? data.events.event : (
+			[data.events.event]);
 
 		eventfulRenderInfo(result);
 		console.log(result); // for testing purposes
