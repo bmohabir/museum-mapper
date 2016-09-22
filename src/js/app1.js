@@ -33,10 +33,8 @@ var infoWindowTemplates = {
 	icons: '<div class="infowindow-icons"></div>',
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
-	fsError: `\`<span class="infowindow-error">Error retrieving Foursquare \` +
-		\`data (\${errorCode} \${errorMsg}).</span>\``,
-	evError: `\`<span class="infowindow-error">Error retrieving Eventful \` +
-		\`data (\${errorCode} \${errorMsg}).</span>\``,
+	errorMsg: `\`<span class="infowindow-error">Error retrieving \` +
+		\`\${errorSrc} data (\${errorCode}\${errorMsg}).</span>\``,
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
 		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">★</a>\` +
@@ -359,13 +357,12 @@ function initMarkers() {
 	model.museumsData.forEach(function(museum, id) {
     	var position = museum.location;
     	var title = museum.name;
-
     	var marker = new google.maps.Marker({
         	position: position,
         	title: title,
          	animation: google.maps.Animation.DROP,
-         	// storing index is useful for identifying individually
-         	// passed marker objects
+         	// storing index is useful for identifying individually passed
+         	// marker objects and their corresponding Museum objects
          	id: id,
          	icon: markerIcon.def,
          	// used to update and revert icon appearance when `selectMarker`
@@ -375,10 +372,12 @@ function initMarkers() {
          		bounce: markerIcon.def_bounce
          	}
     	});
+
     	// set marker click functionality
     	marker.addListener('click', function() {
         	selectMarker(this);
     	});
+
     	// add marker to `markers`
     	markers.push(marker);
 	});
@@ -391,6 +390,7 @@ function initMarkers() {
 		marker.setMap(map);
 		bounds.extend(marker.position);
 	});
+
 	// adjust viewport bounds
 	map.fitBounds(bounds);
 }
@@ -415,6 +415,7 @@ function selectMarker(clickItem) {
 	// animate marker and use highlighted icon
 	marker.setAnimation(google.maps.Animation.BOUNCE);
 	marker.setIcon(marker.icons.bounce);
+
 	openInfoWindow(marker);
 }
 
@@ -425,6 +426,7 @@ function selectMarker(clickItem) {
 function deselectMarker(marker) {
 	marker.setAnimation(null);
 	marker.setIcon(marker.icons.def);
+
 	infoWindow.marker = null;
 	infoWindow.setContent('');
 }
@@ -453,105 +455,117 @@ function openInfoWindow(marker) {
     infoWindow.marker = marker;
     infoWindow.open(map, marker);
 
-    // call Foursquare API (runs asynchronously)
-	fourSquare(marker);
-    // call Eventful API (runs asynchronously)
-    eventFul(marker);
+    // call APIs (asynchronous)
+	getFoursquareData(marker);
+    getEventfulData(marker);
 
     // deselect marker if info window closed
     infoWindow.addListener('closeclick', function() {
         deselectMarker(marker);
     });
 
-    // enables fav star KO binding, needed for dynamically injected elements
-    var $infoWindowHead = $(".infowindow-head")[0];
+	// enables fav star KO binding, needed for dynamically injected elements
+	var $infoWindowHead = $(".infowindow-head")[0];
 	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
 }
 
 /**
-* Updates open info window content with data from passed in
-* Foursquare API response object
-* @parameter {object} data - `venue` object subproperty of Foursquare API
-* response object
-* @parameter {object} marker - Google Maps marker object
-*
-function updateInfoWindowOld(data, marker) {
-	// for debugging (temporary)
-	console.log(data);
-	var current = infoWindow.content;
+* Refresh info window size and position without changing contents
+*/
+function refreshInfoWindow() {
+	var marker = infoWindow.marker;
+
+	infoWindow.open(map, marker);
+}
+
+/**
+* Updates infowindow with Foursquare error info
+* @parameter {object} data - Error data
+*/
+function foursquareRenderError(data) {
+	var $foursquare = $('.foursquare').text('');
+	var errorSrc = 'Foursquare';
+	var errorMsg = data.text;
+	// Ensure final error message makes sense
+	var errorCode = (errorMsg === 'timeout') ? '' : (
+		data.error > 0 ? data.error + ' ' : 'Unknown ');
+	var $error = $(eval(infoWindowTemplates.errorMsg));
+
+	$foursquare.append($error);
+
+	refreshInfoWindow();
+}
+
+/**
+* Updates infowindow with Foursquare API response data
+* @parameter {object} data - Foursquare museum data
+*/
+function foursquareRenderInfo(data) {
+	var marker = infoWindow.marker;
 	var name = marker.title;
 	var id = marker.id;
-	var icons = '';
+	var $foursquare = $('.foursquare').text('');
+	var $icons = $(infoWindowTemplates.icons);
 	var iconSize = img.iconSize();
 	data.categories.forEach(function(cat) {
 		var iconURL = cat.icon.prefix + iconSize + cat.icon.suffix;
 		var iconName = cat.name;
-		icons += eval(infoWindowTemplates.icon);
+		var $icon = $(eval(infoWindowTemplates.icon));
+		$icons.append($icon);
 	});
 	var photoSize = img.photoSize();
 	var sizeString = photoSize + 'x' + photoSize;
-	var photoURL = data.bestPhoto.prefix + sizeString + data.bestPhoto.suffix;
-	var photo = eval(infoWindowTemplates.photo);
-	var content = current + '<div class="infowindow-icons">' + icons +
-		'</div>' + photo;
-	infoWindow.setContent(content);
-	// re-open info window to accomodate size and position
-	infoWindow.open(map, marker);
+	var photoURL = data.bestPhoto.prefix + sizeString +
+		data.bestPhoto.suffix;
+	var $photo = $(eval(infoWindowTemplates.photo));
 
-	// enables fav star KO binding, needed for dynamically injected elements
-	var $infoWindowHead = $(".infowindow-head")[0];
-	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
-}*/
+	$foursquare.removeClass('center-text')
+		.append($icons)
+		.append($photo);
 
-/**
-* Updates open info window sections with data passed in by APIs (if successful),
-* or error message
-* @parameter {string} type - 'foursquare' or 'eventful'
-* @parameter {string} status - 'ok' or 'error'
-* @parameter {object} data - Foursquare or Eventful API response data (if any)
-*/
-function updateInfoWindow(type, status, data) {
-	var marker = infoWindow.marker;
-	var name = marker.title;
-	var id = marker.id;
-
-	if (type === 'foursquare') {
-		var $foursquare = $('.foursquare').text('');
-
-		if (status === 'success') {
-			var $icons = $(infoWindowTemplates.icons);
-			var iconSize = img.iconSize();
-			data.categories.forEach(function(cat) {
-				var iconURL = cat.icon.prefix + iconSize + cat.icon.suffix;
-				var iconName = cat.name;
-				var $icon = $(eval(infoWindowTemplates.icon));
-				$icons.append($icon);
-			});
-			var photoSize = img.photoSize();
-			var sizeString = photoSize + 'x' + photoSize;
-			var photoURL = data.bestPhoto.prefix + sizeString +
-				data.bestPhoto.suffix;
-			var $photo = $(eval(infoWindowTemplates.photo));
-			$foursquare.removeClass('center-text')
-				.append($icons)
-				.append($photo);
-		} else if (status === 'fail') {
-			var errorCode = data.error > 0 ? data.error : 'Unknown';
-			var errorMsg = data.text;
-			var $error = $(eval(infoWindowTemplates.fsError));
-			$foursquare.append($error);
-		}
-	}
-	// re-open info window to accomodate size and position
-	infoWindow.open(map, marker);
+	refreshInfoWindow();
 }
 
 /**
-* Gets Foursquare API venue information for a museum and passes it to
-* `updateInfoWindow` (runs asynchronously)
+* Foursquare API callback function, called by `getFoursquareData` and calls
+* `foursquareRenderInfo` with museum data
+* @parameter {object} data - Foursquare API response JSON
+*/
+function fsSuccessCallback(data) {
+	var result = data.response.venue;
+
+	foursquareRenderInfo(result);
+	//console.log(result); // for testing purposes
+}
+
+/**
+* Foursquare API error handler, called by `getFoursquareData` and calls
+* `foursquareRenderError` with error information
+* @parameter {object} data - Error response object
+*/
+function fsErrorCallback(data) {
+	var result = {
+		error: data.status,
+		text: data.statusText
+	};
+
+	if (data.responseJSON) {
+		var type = data.responseJSON.meta.errorType;
+		var detail = data.responseJSON.meta.errorDetail;
+
+		// log detailed error messages to console
+		console.log('Foursquare API error ' + type + ': ' + detail);
+	}
+
+	foursquareRenderError(result);
+}
+
+/**
+* Gets museum information using Foursquare API and passes response to the
+* appropriate callback function (runs asynchronously)
 * @parameter {object} marker - Google Maps marker object
 */
-function fourSquare(marker) {
+function getFoursquareData(marker) {
 	var venueID = viewModel.getMuseum(marker.id).fsID;
 	var client_id = 'ZKNJGS3QLW32133NNDFHO0O2LLEMUPJ3IOHXDU4QA133NCKR';
 	var client_secret = 'PB0I1OXTRWNMUCLE40OCD3TC1P3GFRJVI13AGBPMGZ5PZIDX';
@@ -564,32 +578,104 @@ function fourSquare(marker) {
 		url: url,
 		dataType: 'json',
 		timeout: 10000,
-		success: function(data) {
-			var result = data.response.venue;
-			//console.log(result);
-			updateInfoWindow('foursquare', 'success', result);
-		},
-		error: function(data) {
-			var result = {
-				error: data.status,
-				text: data.statusText
-			};
-			if (data.responseJSON) {
-				var type = data.responseJSON.meta.errorType;
-				var detail = data.responseJSON.meta.errorDetail;
-				console.log('Foursquare API error ' + type + ': ' + detail);
-			}
-			updateInfoWindow('foursquare', 'fail', result);
-		}
+		success: fsSuccessCallback,
+		error: fsErrorCallback
 	});
 }
 
 /**
+* Updates infowindow with Eventful error info
+* @parameter {object} data - Error data
+*/
+function eventfulRenderError(data) {
+	var $eventful = $('.eventful').text('');
+	var errorSrc = 'Eventful';
+	var errorCode = data.error > 1 ? data.error + ' ' : '';
+	var errorMsg = data.text;
+	var $error = $(eval(infoWindowTemplates.errorMsg));
+
+	$eventful.append($error);
+
+	refreshInfoWindow();
+}
+
+/**
+* Updates infowindow with Eventful API response data
+* @parameter {object} data - Eventful museum data
+*/
+function eventfulRenderInfo(type, data) {
+	var marker = infoWindow.marker;
+	var name = marker.title;
+	var id = marker.id;
+	var $eventful = $('.eventful').text('');
+
+	// TODO
+	refreshInfoWindow();
+}
+
+/**
+* Eventful API callback function, called by `getEventfulData` and calls
+* `eventfulRenderInfo` or `evErrorCallback` based on structure of `data`
+* @parameter {object} data - Eventful API response JSON
+*/
+function evSuccessCallback(data) {
+	if (data.events) {
+		var result = data.events.event;
+
+		eventfulRenderInfo(result);
+		console.log(result); // for testing purposes
+	} else {
+		// Eventful uses JSONP, so we need to manually pass unexpected
+		// responses to the error handler
+		evErrorCallback(data);
+	}
+}
+
+/**
+* Eventful API error handler, called by `getEventfulData` or `evSuccessCallback`
+* and calls `eventfulRenderError` with error information
+* @parameter {object} data - Error response object
+*/
+function evErrorCallback(data) {
+	if (data.error) {
+		// For error response from Eventful API
+		var result = {
+			error: data.error,
+			text: data.status
+		}
+
+		// log detailed error messages to console
+		console.log('Eventful API error ' + data.error + ': ' +
+			data.description);
+
+		eventfulRenderError(result);
+	} else if (data.statusText) {
+		// For other errors (ie. network issue)
+		var result = {
+			error: data.status,
+			text: data.statusText
+		};
+
+		eventfulRenderError(result);
+	} else {
+		// For any errors without a known response structure
+		var result = {
+			error: 0,
+			text: 'Unknown error'
+		};
+
+		eventfulRenderError(result);
+	}
+
+	//console.log(data); // for testing purposes
+}
+
+/**
 * Gets Eventful API venue information for a museum and passes it to
-* `updateInfoWindow` (runs asynchronously) **TODO**
+* `updateInfoWindow` (runs asynchronously)
 * @parameter {object} marker - Google Maps marker object
 */
-function eventFul(marker) {
+function getEventfulData(marker) {
 	var venueID = viewModel.getMuseum(marker.id).evID;
 	var app_key = '52bmjJbHHhT48jbh'
 	var urlPrefix = 'https://api.eventful.com/json/events/search?app_key=';
@@ -599,29 +685,10 @@ function eventFul(marker) {
 	$.get({
 		url: url,
 		dataType: 'jsonp',
-		timeout: 10000,
-		success: function(data) {
-			var result = data.events ? data.events.event : null;
-			console.log(result);
-			// JSONP means bad requests can still trigger success instead
-			// of fail condition, so we'll check the response directly
-			result ? (
-				updateInfoWindow('eventful', 'success', result)
-			) : (
-				console.log('Eventful API error ' + data.error + ': ' +
-					data.description);
-				//updateInfoWindow('eventful', 'error', ...);
-				// TODO: Eventful specific response handler
-			);
-		},
-		error: function(data) {
-			var result = {
-				error: data.status,
-				text: data.statusText
-			};
-			updateInfoWindow('eventful', 'fail', result);
-			console.log(result);
-		}
+		// Eventful response tends to take a while
+		timeout: 15000,
+		success: evSuccessCallback,
+		error: evErrorCallback
 	});
 }
 
@@ -681,10 +748,12 @@ function arraysEqual(arr1, arr2) {
 	if (arr1.length !== arr2.length) {
 		return false;
 	}
+
 	for (var i = arr1.length; i >= 0; i--) {
 		if (arr1[i] !== arr2[i]) {
 			return false;
 		}
 	}
+
 	return true;
 }

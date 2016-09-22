@@ -41,6 +41,7 @@ var ViewModel = function() {
 			// pass results to marker handler
 			filterMarkers(vIDs);
 			this.lastResults = vIDs;
+
 			return vM;
 		}
 
@@ -87,7 +88,7 @@ var ViewModel = function() {
 		}
 	};
 	/**
-	* Fires when bound DOM list star is clicked, toggles fav status in list
+	* Fires when bound fav star is clicked, toggles fav status in list
 	* and calls `markerToggleFav` to toggle marker fav status
 	*/
 	self.toggleFav = function(museum) {
@@ -103,7 +104,7 @@ var ViewModel = function() {
 		return model.museums[id];
 	};
 	/**
-	* Animates removing item from list
+	* Animates and removes item from list
 	* @parameter {object} element
 	*/
 	self.hideListItem = function(element) {
@@ -129,5 +130,6 @@ var ViewModel = function() {
 * Contains viewModel object
 */
 var viewModel = new ViewModel();
+
 // initializes the viewmodel when DOM is ready
 $(ko.applyBindings(viewModel));

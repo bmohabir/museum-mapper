@@ -14,6 +14,7 @@ var Museum = function(obj, id) {
 	// storing index is useful for identifying an
 	// individually passed museum object
 	this.id = id;
+
 	this.toggleFav = function() {
 		this.fav(!this.fav());
 	};
