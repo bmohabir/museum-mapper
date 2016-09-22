@@ -23,14 +23,29 @@ var markerIcon = {
 var infoWindowTemplates = {
 	root: '<div class="infowindow"></div>',
 	head: '<div class="infowindow-head"></div>',
+	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
 	foursquare: '<div class="foursquare center-text">Loading Foursquare data ' +
 		'. . .</div>',
 	eventful: '<div class="eventful center-text">Loading Eventful data . . .' +
 		'</div>',
-	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
-	photo: `\`<div class="infowindow-photo"><img src="\${photoURL}" \` +
+	fsMain: '<div class="foursquare-main"></div>',
+	fsInfo: '<div class="foursquare-info"></div>',
+	fsPhoto: `\`<div class="foursquare-photo"><img src="\${photoURL}" \` +
 		\`alt="\${name}" width="\${photoSize}" height="\${photoSize}"></div>\``,
-	icons: '<div class="infowindow-icons"></div>',
+	address: `\`<div class="infotext-flex"><div>Address:&nbsp;</div><div>\` +
+		\`\${lineOne}<br>\${lineTwo}</div></div>\``,
+	phone: `\`<div>Phone: \${phone}</div>\``,
+	hours: `\`<div class="infotext-flex"><div>Hours:&nbsp;</div><div>\` +
+		\`\${hours}<br>\${status}</div></div>\``,
+	media: '<span class=social-media></span>',
+	facebook: `\`<a href="\${facebook}" target="_blank">Facebook</a>\``,
+	twitter: `\`<a href="\${twitter}" target="_blank">Twitter</a>\``,
+	fsLink: `\`<a href="\${fsURL}" target="_blank">Foursquare</a>\``,
+	website: `\`<div>Website: <a href="\${URL}" target="_blank">\${URL}</a>\` +
+		\`</div>\``,
+	rating: `\`<div>Rating: <span class="rating-text" style="color:\` +
+		\`\${ratingColor}">\${rating}</span>/10</div>\``,
+	fsIcons: '<div class="foursquare-icons"></div>',
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
 	errorMsg: `\`<span class="infowindow-error">Error retrieving \` +
@@ -448,6 +463,7 @@ function openInfoWindow(marker) {
 	var $eventful = $(infoWindowTemplates.eventful);
 	var $root = $(infoWindowTemplates.root).append($head)
 		.append($foursquare)
+		.append($('<hr>'))
 		.append($eventful);
 	var content = $root[0].outerHTML;
 
@@ -505,7 +521,8 @@ function foursquareRenderInfo(data) {
 	var name = marker.title;
 	var id = marker.id;
 	var $foursquare = $('.foursquare').text('');
-	var $icons = $(infoWindowTemplates.icons);
+
+	var $icons = $(infoWindowTemplates.fsIcons);
 	var iconSize = img.iconSize();
 	data.categories.forEach(function(cat) {
 		var iconURL = cat.icon.prefix + iconSize + cat.icon.suffix;
@@ -513,15 +530,117 @@ function foursquareRenderInfo(data) {
 		var $icon = $(eval(infoWindowTemplates.icon));
 		$icons.append($icon);
 	});
+
 	var photoSize = img.photoSize();
 	var sizeString = photoSize + 'x' + photoSize;
 	var photoURL = data.bestPhoto.prefix + sizeString +
 		data.bestPhoto.suffix;
-	var $photo = $(eval(infoWindowTemplates.photo));
+	var $photo = $(eval(infoWindowTemplates.fsPhoto));
+
+	var address = data.location.formattedAddress;
+	var lineOne = address[0];
+	var lineTwo = address[1];
+	var $address = $(eval(infoWindowTemplates.address));
+
+	var ratingColor = '#' + data.ratingColor;
+	var rating = data.rating;
+	var $rating = $(eval(infoWindowTemplates.rating));
+
+	var phone = data.contact.formattedPhone;
+	var $phone = $(eval(infoWindowTemplates.phone));
+
+	var hours = '';
+	var timeframes = data.hours.timeframes;
+	var tfLength = timeframes.length;
+
+	for (var i = 0; i < tfLength; i++) {
+		var days = timeframes[i].days;
+		var openTimes = '';
+		var open = timeframes[i].open;
+		var oLength = open.length;
+
+		for (var j = 0; j < oLength; j++) {
+			var times = open[j].renderedTime;
+			openTimes += times;
+
+			if (oLength > (j + 1)) {
+				openTimes += ', ';
+			}
+		}
+
+		hours += days + ' ' + openTimes;
+
+		if (tfLength > (i + 1)) {
+			hours += '<br>';
+		}
+	}
+
+	var status;
+	var currentStatus = data.hours.status;
+	var statusType = currentStatus.split(' ')[0];
+
+	switch(statusType) {
+		case 'Closed':
+			status = '<span class="status-red">' + currentStatus + '</span>';
+			break;
+		case 'Closing':
+		case 'Closes':
+			status = '<span class="status-orange">' + currentStatus + '</span>';
+			break;
+		case 'Open':
+			status = '<span class="status-blue">' + currentStatus + '</span>';
+			break;
+		default:
+			status = currentStatus;
+	}
+
+	var $hours = $(eval(infoWindowTemplates.hours));
+
+	var URL = data.url;
+	var $website = $(eval(infoWindowTemplates.website));
+
+	var $info = $(infoWindowTemplates.fsInfo).append($address)
+		.append($phone)
+		.append($hours)
+		.append($rating)
+		.append($website);
+
+	var $socialmedia = $(infoWindowTemplates.media);
+	var socialmedia = [];
+
+	if (data.contact.facebook) {
+		var facebook = 'https://www.facebook.com/' + data.contact.facebook;
+		var $facebook = $(eval(infoWindowTemplates.facebook));
+		socialmedia.push($facebook);
+	}
+
+	if (data.contact.twitter) {
+		var twitter = 'https://www.twitter.com/' + data.contact.twitter;
+		var $twitter = $(eval(infoWindowTemplates.twitter));
+		socialmedia.push($twitter);
+	}
+
+	var fsURL = data.canonicalUrl;
+	var $fsLink = $(eval(infoWindowTemplates.fsLink));
+	socialmedia.push($fsLink);
+
+	var smLength = socialmedia.length;
+
+	for (var i = 0; i < smLength; i++) {
+		$socialmedia.append(socialmedia[i]);
+		if (smLength > (i + 1)) {
+			$socialmedia.append($('<span>&nbsp;|&nbsp;</span>'));
+		}
+	}
+
+	$info.append($socialmedia);
+
+	var $fsMain = $(infoWindowTemplates.fsMain).append($photo)
+		.append($info);
 
 	$foursquare.removeClass('center-text')
 		.append($icons)
-		.append($photo);
+		.append($fsMain);
 
 	refreshInfoWindow();
 }
@@ -535,7 +654,7 @@ function fsSuccessCallback(data) {
 	var result = data.response.venue;
 
 	foursquareRenderInfo(result);
-	//console.log(result); // for testing purposes
+	console.log(result); // for testing purposes
 }
 
 /**

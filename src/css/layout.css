@@ -67,7 +67,7 @@ a {
 
 /* start with menu open on large screens, avoids transition lag during
 page load when `showMenu` is called */
-@media (min-width: 768px) {
+@media (min-width: 1000px) {
 	.menu {
 		width: 240px;
 	}
@@ -149,7 +149,11 @@ page load when `showMenu` is called */
 	height: 100%;
 }
 
-.infowindow-icons {
+.foursquare-main {
+	display: flex;
+}
+
+.foursquare-icons {
 	display: flex;
 	background-color: #4682B4;
 	width: 100%;
@@ -205,4 +209,24 @@ page load when `showMenu` is called */
 
 .center-text {
 	text-align: center;
+}
+
+.foursquare-info {
+	padding: 4px 0 0 5px;
+}
+
+.infotext-flex {
+	display: flex;
+}
+
+.status-red {
+	color: #8B0000;
+}
+
+.status-orange {
+	color: #FF8C00;
+}
+
+.status-blue {
+	color: #4169E1;
 }

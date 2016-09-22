@@ -30,7 +30,7 @@ function hideMenu() {
 function isNarrow() {
 	var width = window.innerWidth;
 
-	return (width < 768) ? true : false;
+	return (width < 1000) ? true : false;
 }
 
 // binds menu show and hide buttons to respective functions
