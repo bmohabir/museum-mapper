@@ -517,11 +517,15 @@ function foursquareRenderError(data) {
 * @parameter {object} data - Foursquare museum data
 */
 function foursquareRenderInfo(data) {
-	var marker = infoWindow.marker;
-	var name = marker.title;
-	var id = marker.id;
+	// Foursquare section of infowindow
 	var $foursquare = $('.foursquare').text('');
 
+	var marker = infoWindow.marker;
+	// These are used when evaluating certain templates
+	var name = marker.title;
+	var id = marker.id;
+
+	// Icon bar for museum categories
 	var $icons = $(infoWindowTemplates.fsIcons);
 	var iconSize = img.iconSize();
 	data.categories.forEach(function(cat) {
@@ -531,24 +535,24 @@ function foursquareRenderInfo(data) {
 		$icons.append($icon);
 	});
 
+	// Main museum photo
 	var photoSize = img.photoSize();
 	var sizeString = photoSize + 'x' + photoSize;
 	var photoURL = data.bestPhoto.prefix + sizeString +
 		data.bestPhoto.suffix;
 	var $photo = $(eval(infoWindowTemplates.fsPhoto));
 
+	// Museum address
 	var address = data.location.formattedAddress;
 	var lineOne = address[0];
 	var lineTwo = address[1];
 	var $address = $(eval(infoWindowTemplates.address));
 
-	var ratingColor = '#' + data.ratingColor;
-	var rating = data.rating;
-	var $rating = $(eval(infoWindowTemplates.rating));
-
+	// Museum phone
 	var phone = data.contact.formattedPhone;
 	var $phone = $(eval(infoWindowTemplates.phone));
 
+	// Museum hours
 	var hours = '';
 	var timeframes = data.hours.timeframes;
 	var tfLength = timeframes.length;
@@ -574,7 +578,7 @@ function foursquareRenderInfo(data) {
 			hours += '<br>';
 		}
 	}
-
+	// Current open/closed/closing status
 	var status;
 	var currentStatus = data.hours.status;
 	var statusType = currentStatus.split(' ')[0];
@@ -596,6 +600,12 @@ function foursquareRenderInfo(data) {
 
 	var $hours = $(eval(infoWindowTemplates.hours));
 
+	// Foursquare rating
+	var ratingColor = '#' + data.ratingColor;
+	var rating = data.rating;
+	var $rating = $(eval(infoWindowTemplates.rating));
+
+	// Museum website
 	var URL = data.url;
 	var $website = $(eval(infoWindowTemplates.website));
 
@@ -605,6 +615,7 @@ function foursquareRenderInfo(data) {
 		.append($rating)
 		.append($website);
 
+	// Social media links
 	var $socialmedia = $(infoWindowTemplates.media);
 	var socialmedia = [];
 
