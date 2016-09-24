@@ -4,14 +4,18 @@
 var markers = [];
 
 /**
-* Stores marker icons
+* Stores marker icons for normal, fav and highlighted states
 * All icons credit: Maps Icons Collection https://mapicons.mapsmarker.com
 */
-var markerIcon = {
-	def: 'img/def_marker.png',
-	def_bounce: 'img/def_marker_bounce.png',
-	fav: 'img/fav_marker.png',
-	fav_bounce: 'img/fav_marker_bounce.png'
+var markerIcons = {
+	def: {
+		def: 'img/def_marker.png',
+		bounce: 'img/def_marker_bounce.png',
+	},
+	fav: {
+		def: 'img/fav_marker.png',
+		bounce: 'img/fav_marker_bounce.png'
+	}
 };
 
 /**
@@ -372,6 +376,17 @@ function initMarkers() {
 	model.museumsData.forEach(function(museum, id) {
     	var position = museum.location;
     	var title = museum.name;
+    	var favStatus = viewModel.getMuseum(id).fav();
+    	var icon, icons;
+
+    	if (storageAvailable && favStatus) {
+    		icon = markerIcons.fav.def;
+    		icons = markerIcons.fav;
+    	} else {
+    		icon = markerIcons.def.def;
+    		icons = markerIcons.def;
+    	}
+
     	var marker = new google.maps.Marker({
         	position: position,
         	title: title,
@@ -379,13 +394,10 @@ function initMarkers() {
          	// storing index is useful for identifying individually passed
          	// marker objects and their corresponding Museum objects
          	id: id,
-         	icon: markerIcon.def,
+         	icon: icon,
          	// used to update and revert icon appearance when `selectMarker`
          	// and `deselectMarker` are called
-         	icons: {
-         		def: markerIcon.def,
-         		bounce: markerIcon.def_bounce
-         	}
+         	icons: icons
     	});
 
     	// set marker click functionality
@@ -833,13 +845,7 @@ function getEventfulData(marker) {
 function markerToggleFav(clickItem, status) {
 	var marker = markers[clickItem.id];
 
-	status ? (
-		marker.icons.def = markerIcon.fav,
-		marker.icons.bounce = markerIcon.fav_bounce
-	) : (
-		marker.icons.def = markerIcon.def,
-		marker.icons.bounce = markerIcon.def_bounce
-	);
+	marker.icons = status ? markerIcons.fav : markerIcons.def;
 
 	marker.animation ? marker.setIcon(marker.icons.bounce) : (
 		marker.setIcon(marker.icons.def));
@@ -868,24 +874,4 @@ function filterMarkers(visibleIDs) {
 */
 function mapReset() {
 	infoWindow.marker ? refreshInfoWindow() : map.fitBounds(bounds);
-}
-
-/**
-* Check if two arrays are the same length and contain the same data
-* @parameter {array} arr1 - first array to compare
-* @parameter {array} arr2 - second array to compare
-* @returns {boolean}
-*/
-function arraysEqual(arr1, arr2) {
-	if (arr1.length !== arr2.length) {
-		return false;
-	}
-
-	for (var i = arr1.length; i >= 0; i--) {
-		if (arr1[i] !== arr2[i]) {
-			return false;
-		}
-	}
-
-	return true;
 }

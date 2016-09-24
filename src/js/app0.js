@@ -23,16 +23,6 @@ function hideMenu() {
 	$slideMenu.width(0);
 }
 
-/**
-* Determines if viewport is narrow for dynamic layout
-* @returns {boolean}
-*/
-function isNarrow() {
-	var width = window.innerWidth;
-
-	return (width < 1000) ? true : false;
-}
-
 // binds menu show and hide buttons to respective functions
 $showMenu.click(showMenu);
 $hideMenu.click(hideMenu);

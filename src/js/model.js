@@ -9,14 +9,25 @@ var Museum = function(obj, id) {
 	// venue IDs for Foursquare and Eventful
 	this.fsID = obj.fsID;
 	this.evID = obj.evID;
-	// fav status
-	this.fav = ko.observable(false);
+	// fav status, checking for localStorage value if applicable
+	this.fav = storageAvailable ? eval(localStorage.getItem('' + id)) ? (
+		ko.observable(localStorage.getItem('' + id)) ) : (
+		ko.observable(false) ) : ko.observable(false);
 	// storing index is useful for identifying an
 	// individually passed museum object
 	this.id = id;
 
+	/**
+	* Toggles value of `this.fav`, also updating localStorage if applicable
+	*/
 	this.toggleFav = function() {
-		this.fav(!this.fav());
+		var newValue = !this.fav();
+
+		this.fav(newValue);
+
+		if (storageAvailable) {
+			localStorage.setItem('' + this.id, newValue);
+		}
 	};
 };
 
