@@ -47,8 +47,8 @@ var infoWindowTemplates = {
 	fsLink: `\`<a href="\${fsURL}" target="_blank">Foursquare</a>\``,
 	website: `\`<div>Website: <a href="\${url}" target="_blank">\${url}</a>\` +
 		\`</div>\``,
-	rating: `\`<div>Foursquare Rating: <span class="rating-text" style="color:\` +
-		\`\${ratingColor}">\${rating}</span>/10</div>\``,
+	rating: `\`<div>Foursquare Rating: <span class="rating-text"\` +
+		\`style="color:\${ratingColor}">\${rating}</span>/10</div>\``,
 	fsIcons: '<div class="foursquare-icons"></div>',
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
@@ -56,8 +56,8 @@ var infoWindowTemplates = {
 		\`\${errorSrc} data (\${errorCode}\${errorMsg}).</span>\``,
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
-		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">&#9733;</a>\` +
-		\`<a class="star-def" href="#" data-bind="visible: \` +
+		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">&#9733;\` +
+		\`</a><a class="star-def" href="#" data-bind="visible: \` +
 		\`!$root.getMuseum(\${id}).fav(), click: function() { \` +
 		\`$root.toggleFav($root.getMuseum(\${id})) }">&#9734;</a></div>\``
 };
