@@ -11,7 +11,7 @@
 	<body>
 		<div class="container">
 			<div class="navbar">
-				<div class="button btn-show-menu" id="show-menu">☰</div>
+				<div class="button btn-show-menu" id="show-menu">&#9776;</div>
 				<h2 class="title">NYC Museums</h2>
 			</div>
 			<div class="menu" id="slide-menu">
@@ -22,10 +22,10 @@
 				<hr class="menu-rule">
 				<div class="list-area">
 					<ul class="museum-list" data-bind="foreach: { data: visibleFavs, beforeRemove: hideListItem, afterAdd: showListItem }">
-						<li class="list-item"><div class="list-item-text"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-fav" href="#" data-bind="click: $parent.toggleFav">★</a></div></li>
+						<li class="list-item"><div class="list-item-text"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-fav" href="#" data-bind="click: $parent.toggleFav">&#9733;</a></div></li>
 					</ul>
 					<ul class="museum-list" data-bind="foreach: { data: visibleNonFavs, beforeRemove: hideListItem, afterAdd: showListItem }">
-						<li class="list-item"><div class="list-item-text"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-def" href="#" data-bind="click: $parent.toggleFav">☆</a></div></li>
+						<li class="list-item"><div class="list-item-text"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-def" href="#" data-bind="click: $parent.toggleFav">&#9734;</a></div></li>
 					</ul>
 				</div>
 				<div class="credits">
@@ -59,8 +59,10 @@
 		<script>
 			var map, bounds, infoWindow;
 
-			// callback function for Google Maps API
-			// loads map in '#map' div once API is loaded
+			/**
+			* Callback function for Google Maps API
+			* loads map in '#map' div once API is loaded
+			*/
 			function initMap() {
 				var $map = $('#map').removeClass('center-text')[0];
 

@@ -56,10 +56,10 @@ var infoWindowTemplates = {
 		\`\${errorSrc} data (\${errorCode}\${errorMsg}).</span>\``,
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
-		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">★</a>\` +
+		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">&#9733;</a>\` +
 		\`<a class="star-def" href="#" data-bind="visible: \` +
 		\`!$root.getMuseum(\${id}).fav(), click: function() { \` +
-		\`$root.toggleFav($root.getMuseum(\${id})) }">☆</a></div>\``
+		\`$root.toggleFav($root.getMuseum(\${id})) }">&#9734;</a></div>\``
 };
 
 /**
