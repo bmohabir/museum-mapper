@@ -22,10 +22,10 @@
 				<hr class="menu-rule">
 				<div class="list-area">
 					<ul class="museum-list" data-bind="foreach: { data: visibleFavs, beforeRemove: hideListItem, afterAdd: showListItem }">
-						<li class="list-item"><div class="list-item-text"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-fav" href="#" data-bind="click: $parent.toggleFav">&#9733;</a></div></li>
+						<li class="list-item"><div class="list-item-text overflow-ellipsis"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-fav" href="#" data-bind="click: $parent.toggleFav">&#9733;</a></div></li>
 					</ul>
 					<ul class="museum-list" data-bind="foreach: { data: visibleNonFavs, beforeRemove: hideListItem, afterAdd: showListItem }">
-						<li class="list-item"><div class="list-item-text"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-def" href="#" data-bind="click: $parent.toggleFav">&#9734;</a></div></li>
+						<li class="list-item"><div class="list-item-text overflow-ellipsis"><a href="#" data-bind="text: name, attr: {title: name}, click: $parent.clickItem"></a></div><div class="star"><a class="star-def" href="#" data-bind="click: $parent.toggleFav">&#9734;</a></div></li>
 					</ul>
 				</div>
 				<div class="credits">

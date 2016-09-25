@@ -52,6 +52,13 @@ var infoWindowTemplates = {
 	fsIcons: '<div class="foursquare-icons"></div>',
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
+	evHead: '<div><h4 class="eventful-title">Upcoming Events</h4></div>',
+	eventItem: '<div class="infotext-flex"></div>',
+	eventTime: `\`<div class="event-date">\${formattedDate}&nbsp;&nbsp;\` +
+		\`</div>\``,
+	eventLink: `\`<div class="event-link overflow-ellipsis"><a href="\` +
+		\`\${eventURL}" target="_blank" title="\${title}">\${title}</a>\` +
+		\`</div>\``,
 	errorMsg: `\`<span class="infowindow-error">Error retrieving \` +
 		\`\${errorSrc} data (\${errorCode}\${errorMsg}).</span>\``,
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
@@ -516,7 +523,7 @@ function foursquareRenderError(data) {
 	var errorMsg = data.text;
 	// Ensure final error message makes sense
 	var errorCode = (errorMsg === 'timeout') ? '' : (
-		data.error > 0 ? data.error + ' ' : 'Unknown ');
+		data.error > 0 ? data.error + ' ' : 'Unknown ' );
 	var $error = $(eval(infoWindowTemplates.errorMsg));
 
 	$foursquare.append($error);
@@ -531,11 +538,8 @@ function foursquareRenderError(data) {
 function foursquareRenderInfo(data) {
 	// Foursquare section of infowindow
 	var $foursquare = $('.foursquare').text('');
-
-	var marker = infoWindow.marker;
-	// These are used when evaluating certain templates
-	var name = marker.title;
-	var id = marker.id;
+	// Used when evaluating certain templates
+	var name = infoWindow.marker.title;
 
 	// Icon bar for museum categories
 	var $icons = $(infoWindowTemplates.fsIcons);
@@ -745,13 +749,32 @@ function eventfulRenderError(data) {
 * Updates infowindow with Eventful API response data
 * @parameter {object} data - Eventful museum data
 */
-function eventfulRenderInfo(type, data) {
-	var marker = infoWindow.marker;
-	var name = marker.title;
-	var id = marker.id;
-	var $eventful = $('.eventful').text('');
+function eventfulRenderInfo(data) {
+	var $infowindow = $('.infowindow');
+	var currentWidth = $infowindow.width();
+	var $evHead = $(infoWindowTemplates.evHead);
+	var $eventful = $('.eventful').text('').removeClass('center-text')
+		.append($evHead);
 
-	// TODO
+	data.forEach(function(eventObj) {
+		var startTime = eventObj.start_time;
+		var date = startTime.split(' ')[0];
+		var month = date.charAt(5) === '0' ? date.slice(6, 7) : (
+			date.slice(5, 7) );
+		var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
+			date.slice(8, 10) );
+		var formattedDate = month + '-' + day;
+		var title = eventObj.title;
+		var eventURL = eventObj.url;
+		var $eventTime = $(eval(infoWindowTemplates.eventTime));
+		var $eventLink = $(eval(infoWindowTemplates.eventLink));
+		var $eventItem = $(infoWindowTemplates.eventItem).append($eventTime)
+			.append($eventLink);
+
+		$eventful.append($eventItem);
+	});
+	// prevent events section changing width of infowindow
+	$infowindow.width(currentWidth);
 	refreshInfoWindow();
 }
 
@@ -765,7 +788,7 @@ function evSuccessCallback(data) {
 		// data.events.event contains an array of event objects for multiple
 		// events, but contains the event object itself for only one event
 		var result = Array.isArray(data.events.event) ? data.events.event : (
-			[data.events.event]);
+			[data.events.event] );
 
 		eventfulRenderInfo(result);
 		console.log(result); // for testing purposes

@@ -119,9 +119,6 @@ page load when `showMenu` is called */
 
 .list-item-text {
 	display: block;
-	overflow: hidden;
-  	white-space: nowrap;
-	text-overflow: ellipsis;
 	padding: 0;
 	margin: 0 5px 0 0;
 	width: 200px;
@@ -211,8 +208,27 @@ page load when `showMenu` is called */
 	text-align: center;
 }
 
+.overflow-ellipsis {
+	overflow: hidden;
+  	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 .foursquare-info {
 	padding: 4px 0 0 5px;
+}
+
+.eventful-title {
+	margin: 5px;
+}
+
+.event-date {
+	width: 39px;
+	text-align: right;
+}
+
+.event-link {
+	max-width: calc(100% - 39px);
 }
 
 .infotext-flex {
