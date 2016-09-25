@@ -9,8 +9,8 @@ function isNarrow() {
 }
 
 /**
-* Determines if localStorage or sessionStorage is available
-* @returns {string} - 'local', 'session' or 'none'
+* Determines if localStorage is available
+* @returns {boolean}
 */
 var storageAvailable = (function() {
 	var test = 'test';
