@@ -791,7 +791,7 @@ function evSuccessCallback(data) {
 			[data.events.event] );
 
 		eventfulRenderInfo(result);
-		console.log(result); // for testing purposes
+		//console.log(result); // for testing purposes
 	} else {
 		// Eventful uses JSONP, so we need to manually pass unexpected
 		// responses to the error handler
