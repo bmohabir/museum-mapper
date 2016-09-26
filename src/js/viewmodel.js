@@ -13,6 +13,10 @@ var ViewModel = function() {
 	*/
 	self.searchQuery = ko.observable('');
 	/**
+	* Used to filter list view to only show favorites
+	*/
+	self.onlyFavs = ko.observable('false');
+	/**
 	* Stores most recent search results for comparing with current results
 	*/
 	self.lastResults = [];
@@ -26,13 +30,16 @@ var ViewModel = function() {
 		var vIDs = [];
 		// search should be case insensitive
 		var searchQuery = this.searchQuery().toLowerCase();
+		var onlyFavs = eval(this.onlyFavs());
 
 		model.museums.forEach(function(museum, id) {
 			var museumName = museum.name.toLowerCase();
 
 			if (museumName.search(searchQuery) !== -1) {
-				vIDs.push(id);
-				vM.push(museum);
+				if ((museum.fav() && onlyFavs) || !onlyFavs) {
+					vIDs.push(id);
+					vM.push(museum);
+				}
 			}
 		});
 

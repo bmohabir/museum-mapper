@@ -95,6 +95,8 @@ page load when `showMenu` is called */
 .list-area {
   	width: 240px;
   	margin: 0;
+  	height: calc(100% - 185px);
+  	overflow-y: scroll;
 }
 
 .list-area a:hover {
@@ -245,4 +247,15 @@ page load when `showMenu` is called */
 
 .status-blue {
 	color: #4169E1;
+}
+
+.list-controls {
+	display: flex;
+	justify-content: space-around;
+	margin: auto 0 0 0;
+}
+
+.radio-button {
+	vertical-align: top;
+	margin: 1px 7px 0 0;
 }
