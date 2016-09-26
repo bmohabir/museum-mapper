@@ -53,6 +53,12 @@ var Model = function() {
 		* @property {string} evID - contains Eventful venue ID
 		*/
 		{
+			name: 'American Folk Art Museum',
+			location: {lat: 40.7733377, lng: -73.9813846},
+			fsID: '4bc8ceda0687ef3bd7a3d8cc',
+			evID: 'V0-001-002983483-2'
+		},
+		{
 			name: 'American Museum of Natural History',
 			location: {lat: 40.7813241, lng: -73.9739882},
 			fsID: '4297b480f964a52062241fe3',
@@ -70,11 +76,23 @@ var Model = function() {
 			fsID: '49f5135cf964a5208e6b1fe3',
 			evID: 'V0-001-001711228-7'
 		},
+		{
+			name: 'The Jewish Museum',
+			location: {lat: 40.7854597, lng: -73.9571318},
+			fsID: '4a746fb2f964a52025de1fe3',
+			evID: 'V0-001-001084061-9'
+		},
 	    {
 	    	name: 'The Metropolitan Museum of Art',
 	    	location: {lat: 40.7794366, lng: -73.963244},
 	    	fsID: '427c0500f964a52097211fe3',
 	    	evID: 'V0-001-000228997-4'
+	    },
+	    {
+	    	name: 'Museum of Arts and Design (MAD)',
+	    	location: {lat: 40.7673947, lng: -73.9820338},
+	    	fsID: '4a6cbb32f964a52076d11fe3',
+	    	evID: 'V0-001-000447865-1'
 	    },
 	    {
 	    	name: 'Museum of Modern Art',
@@ -89,16 +107,40 @@ var Model = function() {
 	    	evID: 'V0-001-000448132-7'
 	    },
 	    {
+	    	name: 'New York Hall of Science',
+	    	location: {lat: 40.7473311, lng: -73.8517438},
+	    	fsID: '45545fd1f964a520043d1fe3',
+	    	evID: 'V0-001-007881154-7'
+	    },
+	    {
 	    	name: 'New York Historical Society',
 	    	location: {lat: 40.779306, lng: -73.97427},
 	    	fsID: '4b48d37df964a520d55826e3',
 	    	evID: 'V0-001-001084240-4'
 	    },
 	    {
+	    	name: 'New York Transit Museum',
+	    	location: {lat: 40.6904104, lng: -73.9898535},
+	    	fsID: '45727340f964a520733e1fe3',
+	    	evID: 'V0-001-001202380-9'
+	    },
+	    {
+	    	name: 'Queens Museum',
+	    	location: {lat: 40.74591, lng: -73.84689},
+	    	fsID: '4a3d33ecf964a520f3a11fe3',
+	    	evID: 'V0-001-007432321-1'
+	    },
+	    {
 	    	name: 'Solomon R. Guggenheim Museum',
 	    	location: {lat: 40.7829796, lng: -73.9589706},
 	    	fsID: '41706480f964a520a51d1fe3',
 	    	evID: 'V0-001-000439048-7'
+	    },
+	    {
+	    	name: 'Whitney Museum of American Art',
+	    	location: {lat: 40.7396091, lng: -74.0088604},
+	    	fsID: '421a7600f964a5209d1f1fe3',
+	    	evID: 'V0-001-000965487-6'
 	    }
 	];
 	/**

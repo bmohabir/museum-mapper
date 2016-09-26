@@ -707,26 +707,30 @@ function eventfulRenderInfo(data) {
 	var $infowindow = $('.infowindow');
 	var currentWidth = $infowindow.width();
 	var $evHead = $(infoWindowTemplates.evHead);
+	var $noEvents = $(infoWindowTemplates.noEvents);
 	var $eventful = $('.eventful').text('').removeClass('center-text')
 		.append($evHead);
 
-	data.forEach(function(eventObj) {
-		var startTime = eventObj.start_time;
-		var date = startTime.split(' ')[0];
-		var month = date.charAt(5) === '0' ? date.slice(6, 7) : (
-			date.slice(5, 7) );
-		var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
-			date.slice(8, 10) );
-		var formattedDate = month + '-' + day;
-		var title = eventObj.title;
-		var eventURL = eventObj.url;
-		var $eventTime = $(eval(infoWindowTemplates.eventTime));
-		var $eventLink = $(eval(infoWindowTemplates.eventLink));
-		var $eventItem = $(infoWindowTemplates.eventItem).append($eventTime)
-			.append($eventLink);
+	data.length ? (
+		data.forEach(function(eventObj) {
+			var startTime = eventObj.start_time;
+			var date = startTime.split(' ')[0];
+			var month = date.charAt(5) === '0' ? date.slice(6, 7) : (
+				date.slice(5, 7) );
+			var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
+				date.slice(8, 10) );
+			var formattedDate = month + '-' + day;
+			var title = eventObj.title;
+			var eventURL = eventObj.url;
+			var $eventTime = $(eval(infoWindowTemplates.eventTime));
+			var $eventLink = $(eval(infoWindowTemplates.eventLink));
+			var $eventItem = $(infoWindowTemplates.eventItem).append($eventTime)
+				.append($eventLink);
 
-		$eventful.append($eventItem);
-	});
+			$eventful.append($eventItem);
+		})
+	) : $eventful.append($noEvents);
+
 	// prevent events section changing width of infowindow
 	$infowindow.width(currentWidth);
 	refreshInfoWindow();
@@ -738,11 +742,12 @@ function eventfulRenderInfo(data) {
 * @parameter {object} data - Eventful API response JSON
 */
 function evSuccessCallback(data) {
-	if (data.events) {
+	//console.log(data);
+	if (data.total_items) {
 		// data.events.event contains an array of event objects for multiple
 		// events, but contains the event object itself for only one event
-		var result = Array.isArray(data.events.event) ? data.events.event : (
-			[data.events.event] );
+		var result = data.total_items > 0 ? Array.isArray(data.events.event) ? (
+			data.events.event ) : [data.events.event] : [];
 
 		eventfulRenderInfo(result);
 		//console.log(result); // for testing purposes

@@ -232,6 +232,10 @@ page load when `showMenu` is called */
 	margin: 5px;
 }
 
+.eventful-msg {
+	margin: 0 0 0 10px;
+}
+
 .event-date {
 	width: 39px;
 	text-align: right;

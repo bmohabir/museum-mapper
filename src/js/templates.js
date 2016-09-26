@@ -33,6 +33,7 @@ var infoWindowTemplates = {
 	icon: `\`<img src="\${iconURL}" alt="\${iconName}" width="\${iconSize}" \` +
 		\`height="\${iconSize}">\``,
 	evHead: '<div><h4 class="eventful-title">Upcoming Events</h4></div>',
+	noEvents: '<div class="eventful-msg"><span>No events found</span></div>',
 	eventItem: '<div class="infotext-flex"></div>',
 	eventTime: `\`<div class="event-date">\${formattedDate}&nbsp;&nbsp;\` +
 		\`</div>\``,
