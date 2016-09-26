@@ -866,7 +866,7 @@ function filterMarkers(visibleIDs) {
 * initial infowindow view state (if infowindow is open)
 */
 function mapReset() {
-	infoWindow.marker ? refreshInfoWindow() : map.fitBounds(bounds);
+	infoWindow.map ? refreshInfoWindow() : map.fitBounds(bounds);
 }
 
 // binds reset map button
