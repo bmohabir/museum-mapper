@@ -158,6 +158,14 @@ page load when `showMenu` is called */
 	width: 100%;
 }
 
+.infowindow a {
+	color: #777;
+}
+
+.infowindow a:hover {
+	text-decoration: underline;
+}
+
 .infowindow-head {
 	display: inline-block;
 	padding: 5px 0;
