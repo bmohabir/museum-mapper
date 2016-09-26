@@ -67,7 +67,6 @@ gulp.task('csslint', ['less', 'sass'], function() {
 	gulp.src('src/css/**/*.css')
 		.pipe(cached('css'))
 		.pipe(csslint().on('error', handleErr))
-		.pipe(csslint.reporter())
 		.pipe(browserSync.stream());
 });
 
@@ -92,14 +91,15 @@ gulp.task('eslint', function() {
 		.pipe(eslint.format());
 });
 
-gulp.task('usemin', ['csslint', 'htmlhint', 'eslint'], function() {
+gulp.task('usemin', ['csslint', 'htmlhint'], function() {
 	return gulp.src('src/**/*.html')
 		.pipe(usemin({
 			'css': [ autoprefixer({'browsers': ['last 2 versions'], 'cascade': false}).on('error', handleErr), csso().on('error', handleErr), rev() ],
 			'html': [ htmlmin().on('error', handleErr) ],
 			'js': [ uglify().on('error', handleErr), rev() ],
 			'libjs': [ uglify().on('error', handleErr) ],
-			'libcss': [ csso().on('error', handleErr) ]
+			'libcss': [ csso().on('error', handleErr) ],
+			'rawjs': []
 		}).on('error', handleErr))
 		.pipe(gulp.dest('dist'));
 });
@@ -109,6 +109,8 @@ gulp.task('fonts', function() {
 		.pipe(cached('fonts'))
 		.pipe(gulp.dest('dist/fonts'));
 });
+
+gulp.task('build', ['imagemin', 'usemin']);
 
 gulp.task('watch', ['bowerfiles', 'fonts', 'imagemin', 'usemin', 'browsersync'], function() {
 	gulp.watch('**/*.html', {'cwd': 'src'}, ['usemin']).on('change', browserSync.reload);

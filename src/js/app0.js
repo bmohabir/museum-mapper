@@ -27,9 +27,6 @@ function hideMenu() {
 $showMenu.click(showMenu);
 $hideMenu.click(hideMenu);
 
-// binds reset map button
-$mapReset.click(mapReset);
-
 // complements media query for initial menu state and search box focus
 // (prevents CSS media query opening and closing menu without user input)
 $(function() {
