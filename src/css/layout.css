@@ -253,6 +253,7 @@ page load when `showMenu` is called */
 	display: flex;
 	justify-content: space-around;
 	margin: auto 0 0 0;
+	width: 240px;
 }
 
 .radio-button {
