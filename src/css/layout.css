@@ -158,7 +158,7 @@ page load when `showMenu` is called */
 	width: 100%;
 }
 
-.infowindow a {
+.foursquare a, .eventful a {
 	color: #777;
 }
 
