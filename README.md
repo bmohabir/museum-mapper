@@ -19,8 +19,8 @@ Simply open `index.html` in an up-to-date web browser.
 * Use the radio buttons to choose between showing all museums or only favorited ones.
 
 ## Attributions
-* Map powered by Google Maps API
-* Map style is 'becomeadinosaur' from snazzymaps.com
-* Map marker icons provided by Map Icons Collection (mapicons.mapsmarker.com)
-* Museum photo, icons and information provided by Foursquare API
-* Museum events provided by Eventful API
+* Map powered by [Google Maps API](https://developers.google.com/maps)
+* Map style is [becomeadinosaur](https://snazzymaps.com/style/74/becomeadinosaur) from [Snazzy Maps](https://snazzymaps.com/)
+* Map marker icons provided by [Map Icons Collection](https://mapicons.mapsmarker.com)
+* Museum photo, icons and information provided by [Foursquare API](https://developer.foursquare.com)
+* Museum events provided by [Eventful API](https://api.eventful.com)
