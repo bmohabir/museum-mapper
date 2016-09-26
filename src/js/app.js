@@ -415,8 +415,9 @@ function deselectMarker(marker) {
 	marker.setAnimation(null);
 	marker.setIcon(marker.icons.def);
 
-	infoWindow.marker = null;
-	infoWindow.setContent('');
+	//infoWindow.marker = null;
+	//infoWindow.setContent('');
+	infoWindow.close();
 }
 
 /**
@@ -459,12 +460,17 @@ function openInfoWindow(marker) {
 }
 
 /**
-* Refresh info window size and position without changing contents
+* Refresh info window size and position
 */
 function refreshInfoWindow() {
 	var marker = infoWindow.marker;
 
 	infoWindow.open(map, marker);
+	// center the marker and then shift the map downward
+	// by half of the infowindow height
+	map.setCenter(marker.getPosition());
+	var offset = $('.infowindow').height() / 2;
+	map.panBy(0, -1 * offset);
 }
 
 /**
