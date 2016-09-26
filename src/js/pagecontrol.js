@@ -11,7 +11,7 @@ function showMenu() {
 	$slideMenu.width(240);
 	// delay search box focus due to some browsers canceling
 	// CSS transitions halfway through
-	window.setTimeout(function() {
+	setTimeout(function() {
 		$searchBox.focus();
 	}, 500);
 }

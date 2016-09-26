@@ -704,8 +704,16 @@ function eventfulRenderError(data) {
 * @parameter {object} data - Eventful museum data
 */
 function eventfulRenderInfo(data) {
+	// don't render events until Foursquare section is populated
+	var fsDone = !!$('.foursquare-info')[0];
+	var fsError = !!$('.infowindow-error')[0];
+	if (!fsDone && !fsError) {
+		setTimeout(function(){ eventfulRenderInfo(data); }, 500);
+		return;
+	}
+
 	var $infowindow = $('.infowindow');
-	var currentWidth = $infowindow.width();
+	var currentWidth = fsError ? 320 : $infowindow.width();
 	var $evHead = $(infoWindowTemplates.evHead);
 	var $noEvents = $(infoWindowTemplates.noEvents);
 	var $eventful = $('.eventful').text('').removeClass('center-text')
