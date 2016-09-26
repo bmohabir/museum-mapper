@@ -380,6 +380,7 @@ function initMarkers() {
 
 /**
 * Animates selected marker and calls `openInfoWindow`
+* also hides menu if view is too narrow
 * @parameter {object} clickItem - marker or museum object
 */
 function selectMarker(clickItem) {
@@ -400,6 +401,10 @@ function selectMarker(clickItem) {
 	marker.setIcon(marker.icons.bounce);
 
 	openInfoWindow(marker);
+
+	if (isNarrow()) {
+		hideMenu();
+	}
 }
 
 /**

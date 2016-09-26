@@ -77,15 +77,10 @@ var ViewModel = function() {
 	}, self);
 	/**
 	* Fires when bound DOM list item is clicked, calls `menuSelMarker`
-	* with museum `id` property as parameter, also hides the menu if
-	* view is too narrow
+	* with museum `id` property as parameter
 	*/
 	self.clickItem = function(museum) {
 		selectMarker(museum);
-
-		if (isNarrow()) {
-			hideMenu();
-		}
 	};
 	/**
 	* Fires when bound fav star is clicked, toggles fav status in list
