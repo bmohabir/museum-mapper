@@ -414,9 +414,6 @@ function selectMarker(clickItem) {
 function deselectMarker(marker) {
 	marker.setAnimation(null);
 	marker.setIcon(marker.icons.def);
-
-	//infoWindow.marker = null;
-	//infoWindow.setContent('');
 	infoWindow.close();
 }
 
