@@ -1,3 +1,5 @@
+var map, bounds, infoWindow;
+
 /**
 * Used to store map markers
 */
@@ -324,6 +326,25 @@ var mapStyle = [
 	    "featureType": "road.highway"
 	}
 ];
+
+/**
+* Callback function for Google Maps API
+* loads map in '#map' div once API is loaded
+*/
+function initMap() {
+	var $map = $('#map').removeClass('center-text')[0];
+
+	map = new google.maps.Map($map, {
+		center: {lat: 40.7413549, lng: -73.99802439999996},
+		zoom: 13,
+		// hide style/zoom/streetview UI
+		disableDefaultUI: true,
+		styles: mapStyle
+	});
+
+	infoWindow = new google.maps.InfoWindow();
+	initMarkers();
+}
 
 /**
 * Creates map markers from `model.museumsData`, called by `initMap`
