@@ -30,9 +30,5 @@ $hideMenu.click(hideMenu);
 // complements media query for initial menu state and search box focus
 // (prevents CSS media query opening and closing menu without user input)
 $(function() {
-	(!isNarrow()) ? (
-		showMenu()
-	) : (
-		hideMenu()
-	);
+	(!isNarrow()) ? showMenu() : hideMenu();
 });
