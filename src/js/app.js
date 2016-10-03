@@ -489,6 +489,10 @@ function refreshInfoWindow() {
 	map.setCenter(marker.getPosition());
 	var offset = $('.infowindow').height() / 2;
 	map.panBy(0, -1 * offset);
+
+	// enables fav star KO binding, needed for dynamically injected elements
+	var $infoWindowHead = $(".infowindow-head")[0];
+	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
 }
 
 /**
@@ -496,7 +500,9 @@ function refreshInfoWindow() {
 * @parameter {object} data - Error data
 */
 function foursquareRenderError(data) {
-	var $foursquare = $('.foursquare').text('');
+	var content = infoWindow.content;
+	var $content = $(content);
+	var $foursquare = $content.find('.foursquare').text('');
 	var errorSrc = 'Foursquare';
 	var errorMsg = data.text;
 	// Ensure final error message makes sense
@@ -505,6 +511,8 @@ function foursquareRenderError(data) {
 	var $error = $(eval(infoWindowTemplates.errorMsg));
 
 	$foursquare.append($error);
+	content = $content[0].outerHTML;
+	infoWindow.setContent(content);
 
 	refreshInfoWindow();
 }
@@ -514,8 +522,9 @@ function foursquareRenderError(data) {
 * @parameter {object} data - Foursquare museum data
 */
 function foursquareRenderInfo(data) {
-	// Foursquare section of infowindow
-	var $foursquare = $('.foursquare').text('');
+	var content = infoWindow.content;
+	var $content = $(content);
+	var $foursquare = $content.find('.foursquare').text('');
 	// Used when evaluating certain templates
 	var name = infoWindow.marker.title;
 
@@ -647,6 +656,9 @@ function foursquareRenderInfo(data) {
 		.append($icons)
 		.append($fsMain);
 
+	content = $content[0].outerHTML;
+	infoWindow.setContent(content);
+
 	refreshInfoWindow();
 }
 
@@ -659,7 +671,6 @@ function fsSuccessCallback(data) {
 	var result = data.response.venue;
 
 	foursquareRenderInfo(result);
-	//console.log(result); // for testing purposes
 }
 
 /**
@@ -712,13 +723,25 @@ function getFoursquareData(marker) {
 * @parameter {object} data - Error data
 */
 function eventfulRenderError(data) {
-	var $eventful = $('.eventful').text('');
+	// don't render until Foursquare section is populated
+	var fsDone = !!$('.foursquare-info')[0];
+	var fsError = !!$('.infowindow-error')[0];
+	if (!fsDone && !fsError) {
+		setTimeout(function(){ eventfulRenderError(data); }, 500);
+		return;
+	}
+
+	var content = infoWindow.content;
+	var $content = $(content);
+	var $eventful = $content.find('.eventful').text('');
 	var errorSrc = 'Eventful';
 	var errorCode = data.error > 1 ? data.error + ' ' : '';
 	var errorMsg = data.text;
 	var $error = $(eval(infoWindowTemplates.errorMsg));
 
 	$eventful.append($error);
+	content = $content[0].outerHTML;
+	infoWindow.setContent(content);
 
 	refreshInfoWindow();
 }
@@ -728,7 +751,7 @@ function eventfulRenderError(data) {
 * @parameter {object} data - Eventful museum data
 */
 function eventfulRenderInfo(data) {
-	// don't render events until Foursquare section is populated
+	// don't render until Foursquare section is populated
 	var fsDone = !!$('.foursquare-info')[0];
 	var fsError = !!$('.infowindow-error')[0];
 	if (!fsDone && !fsError) {
@@ -737,10 +760,13 @@ function eventfulRenderInfo(data) {
 	}
 
 	var $infowindow = $('.infowindow');
+	var content = infoWindow.content;
+	var $content = $(content);
 	var currentWidth = fsError ? 320 : $infowindow.width();
 	var $evHead = $(infoWindowTemplates.evHead);
 	var $noEvents = $(infoWindowTemplates.noEvents);
-	var $eventful = $('.eventful').text('').removeClass('center-text')
+	var $eventful = $content.find('.eventful').text('')
+		.removeClass('center-text')
 		.append($evHead);
 
 	data.length ? (
@@ -762,6 +788,9 @@ function eventfulRenderInfo(data) {
 			$eventful.append($eventItem);
 		})
 	) : $eventful.append($noEvents);
+
+	content = $content[0].outerHTML;
+	infoWindow.setContent(content);
 
 	// prevent events section changing width of infowindow
 	$infowindow.width(currentWidth);
