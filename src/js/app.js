@@ -430,12 +430,14 @@ function selectMarker(clickItem) {
 
 /**
 * Cancels animation, reverts icon and closes infowindow for selected marker
+* Also clears Knockout
 * @parameter {object} marker - clicked marker object
 */
 function deselectMarker(marker) {
 	marker.setAnimation(null);
 	marker.setIcon(marker.icons.def);
 	infoWindow.close();
+
 }
 
 /**
@@ -453,10 +455,10 @@ function openInfoWindow(marker) {
 		.append($favStar);
 	var $foursquare = $(infoWindowTemplates.foursquare);
 	var $eventful = $(infoWindowTemplates.eventful);
-	var $root = $(infoWindowTemplates.root).append($head)
-		.append($foursquare)
-		.append($('<hr>'))
-		.append($eventful);
+	var $root = $(infoWindowTemplates.root).append($head);
+		//.append($foursquare)
+		//.append($('<hr>'))
+		//.append($eventful);
 	var content = $root[0].outerHTML;
 
 	infoWindow.setContent(content);
@@ -465,7 +467,7 @@ function openInfoWindow(marker) {
 
     // call APIs (asynchronous)
 	getFoursquareData(marker);
-    getEventfulData(marker);
+    //getEventfulData(marker);
 
     // deselect marker if info window closed
     infoWindow.addListener('closeclick', function() {
@@ -490,9 +492,9 @@ function refreshInfoWindow() {
 	var offset = $('.infowindow').height() / 2;
 	map.panBy(0, -1 * offset);
 
-	// enables fav star KO binding, needed for dynamically injected elements
-	var $infoWindowHead = $(".infowindow-head")[0];
-	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
+	// enables KO bindings, needed for dynamically injected elements
+	var $infowindow = $(".infowindow")[0];
+	ko.applyBindingsToDescendants(viewModel, $infowindow);
 }
 
 /**
@@ -522,143 +524,113 @@ function foursquareRenderError(data) {
 * @parameter {object} data - Foursquare museum data
 */
 function foursquareRenderInfo(data) {
-	var content = infoWindow.content;
-	var $content = $(content);
-	var $foursquare = $content.find('.foursquare').text('');
-	// Used when evaluating certain templates
+	var fsData = viewModel.fsInfoWindow;
 	var name = infoWindow.marker.title;
+	var current = infoWindow.content;
+	var $current = $(current);
+	var template = infoWindowTemplates.foursquare;
+	var $template = $(template);
+	$current.append($template);
+	// Used when evaluating certain templates
+	fsData.name(name);
 
 	// Icon bar for museum categories
-	var $icons = $(infoWindowTemplates.fsIcons);
 	var iconSize = img.iconSize();
+	var categories = [];
+	fsData.iconSize(iconSize);
 	data.categories.forEach(function(cat) {
-		var iconURL = cat.icon.prefix + iconSize + cat.icon.suffix;
-		var iconName = cat.name;
-		var $icon = $(eval(infoWindowTemplates.icon));
-		$icons.append($icon);
+		var category = {
+			url: cat.icon.prefix + iconSize + cat.icon.suffix,
+			name: cat.name
+		};
+		categories.push(category);
 	});
+	fsData.categories(categories);
 
 	// Main museum photo
 	var photoSize = img.photoSize();
 	var sizeString = photoSize + 'x' + photoSize;
 	var photoURL = data.bestPhoto.prefix + sizeString +
 		data.bestPhoto.suffix;
-	var $photo = $(eval(infoWindowTemplates.fsPhoto));
+	fsData.photoSize(photoSize);
+	fsData.photo(photoURL);
 
 	// Museum address
 	var address = data.location.formattedAddress;
-	var lineOne = address[0];
-	var lineTwo = address[1];
-	var $address = $(eval(infoWindowTemplates.address));
+	fsData.address.lineOne(address[0]);
+	fsData.address.lineTwo(address[1]);
 
 	// Museum phone
 	var phone = data.contact.formattedPhone;
-	var $phone = $(eval(infoWindowTemplates.phone));
+	fsData.phone(phone);
 
 	// Museum hours
-	var hours = '';
+	var hours = [];
 	var timeframes = data.hours.timeframes;
-	var tfLength = timeframes.length;
-
-	for (var i = 0; i < tfLength; i++) {
-		var days = timeframes[i].days;
+	timeframes.forEach(function(tf) {
+		var days = tf.days;
 		var openTimes = '';
-		var open = timeframes[i].open;
+		var open = tf.open;
 		var oLength = open.length;
 
-		for (var j = 0; j < oLength; j++) {
-			var times = open[j].renderedTime;
+		for (var i = 0; i < oLength; i++) {
+			var times = open[i].renderedTime;
 			openTimes += times;
 
-			if (oLength > (j + 1)) {
+			if (oLength > (i + 1)) {
 				openTimes += ', ';
 			}
 		}
 
-		hours += days + ' ' + openTimes;
+		hours.push(days + ' ' + openTimes);
+	});
+	fsData.hours(hours);
 
-		if (tfLength > (i + 1)) {
-			hours += '<br>';
-		}
-	}
-	// Current open/closed/closing status
-	var status;
-	var currentStatus = data.hours.status;
-	var statusType = currentStatus.split(' ')[0];
+	// Current open/closed status
+	var status = data.hours.status;
+	var statusColor;
+	var statusType = status.split(' ')[0];
 
 	switch(statusType) {
 		case 'Closed':
-			status = '<span class="status-red">' + currentStatus + '</span>';
-			break;
-		case 'Closing':
-		case 'Closes':
-			status = '<span class="status-orange">' + currentStatus + '</span>';
+			statusColor = 'status-red';
 			break;
 		case 'Open':
-			status = '<span class="status-blue">' + currentStatus + '</span>';
+			statusColor = 'status-blue';
 			break;
 		default:
-			status = currentStatus;
+			statusColor = 'status-orange';
 	}
-
-	var $hours = $(eval(infoWindowTemplates.hours));
+	fsData.status(status);
+	fsData.statusColor(statusColor);
 
 	// Foursquare rating
 	var ratingColor = '#' + data.ratingColor;
 	var rating = data.rating;
-	var $rating = $(eval(infoWindowTemplates.rating));
+	fsData.rating(rating);
+	fsData.ratingColor(ratingColor);
 
 	// Museum website
 	var url = data.url;
-	var $website = $(eval(infoWindowTemplates.website));
-
-	var $info = $(infoWindowTemplates.fsInfo).append($address)
-		.append($phone)
-		.append($hours)
-		.append($rating)
-		.append($website);
+	fsData.url(url);
 
 	// Social media links
-	var $socialmedia = $(infoWindowTemplates.media);
-	var socialmedia = [];
+	var facebook = data.contact.facebook ? (
+			'https://www.facebook.com/' + data.contact.facebook
+		) : null;
+	fsData.socialMedia.facebook(facebook);
 
-	if (data.contact.facebook) {
-		var facebook = 'https://www.facebook.com/' + data.contact.facebook;
-		var $facebook = $(eval(infoWindowTemplates.facebook));
-		socialmedia.push($facebook);
-	}
+	var twitter = data.contact.twitter ? (
+			'https://www.twitter.com/' + data.contact.twitter
+		) : null;
+	fsData.socialMedia.twitter(twitter);
 
-	if (data.contact.twitter) {
-		var twitter = 'https://www.twitter.com/' + data.contact.twitter;
-		var $twitter = $(eval(infoWindowTemplates.twitter));
-		socialmedia.push($twitter);
-	}
-
+	// Foursquare link
 	var fsURL = data.canonicalUrl;
-	var $fsLink = $(eval(infoWindowTemplates.fsLink));
-	socialmedia.push($fsLink);
+	fsData.socialMedia.foursquare(fsURL);
 
-	var smLength = socialmedia.length;
-
-	for (var i = 0; i < smLength; i++) {
-		$socialmedia.append(socialmedia[i]);
-		if (smLength > (i + 1)) {
-			$socialmedia.append($('<span>&nbsp;|&nbsp;</span>'));
-		}
-	}
-
-	$info.append($socialmedia);
-
-	var $fsMain = $(infoWindowTemplates.fsMain).append($photo)
-		.append($info);
-
-	$foursquare.removeClass('center-text')
-		.append($icons)
-		.append($fsMain);
-
-	content = $content[0].outerHTML;
+	var content = $current[0].outerHTML;
 	infoWindow.setContent(content);
-
 	refreshInfoWindow();
 }
 

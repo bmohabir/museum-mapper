@@ -126,6 +126,32 @@ var ViewModel = function() {
 				.animate({ opacity: 1 }, { queue: false, duration: 'slow'});
 		}
 	};
+	/**
+	* Stores Foursquare infowindow data
+	*/
+	self.fsInfoWindow = {
+		name: ko.observable(),
+		categories: ko.observableArray(),
+		iconSize: ko.observable(),
+		photo: ko.observable(),
+		photoSize: ko.observable(),
+		address: {
+			lineOne: ko.observable(),
+			lineTwo: ko.observable()
+		},
+		phone: ko.observable(),
+		hours: ko.observableArray(),
+		status: ko.observable(),
+		statusColor: ko.observable(),
+		rating: ko.observable(),
+		ratingColor: ko.observable(),
+		url: ko.observable(),
+		socialMedia: {
+			facebook: ko.observable(),
+			twitter: ko.observable(),
+			foursquare: ko.observable()
+		}
+	};
 };
 
 /**
