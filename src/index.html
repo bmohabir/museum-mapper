@@ -52,6 +52,9 @@
 			<div class="app center-text" id="map">Please check your internet connection and verify JavaScript is enabled</div>
 			<input type="button" class="map-reset" value="Reset View">
 		</div>
+		<script type="text/html" id="error-template">
+			<div class="infowindow-error">Error retrieving <span data-bind="text: src"></span> data (<span data-bind="if: code"><span data-bind="text: code"></span></span><span data-bind="text: msg"></span>).</div>
+		</script>
 		<script type="text/html" id="foursquare-template">
 		    <div class="foursquare-icons" data-bind="foreach: categories"><img data-bind="attr: { src: $data.url, alt: $data.name, title: $data.name, width: $parent.iconSize, height: $parent.iconSize }"></div>
 		    <div class="foursquare-main">

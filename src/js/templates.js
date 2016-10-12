@@ -8,6 +8,8 @@ var infoWindowTemplates = {
 	root: '<div class="infowindow"></div>',
 	head: '<div class="infowindow-head"></div>',
 	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
+	error: '<div data-bind="css: infoWindowError.cID, ' +
+		'template: { name: \'error-template\', data: infoWindowError }"></div>',
 	foursquare: '<div class="foursquare" data-bind="template: { name: ' +
 		'\'foursquare-template\', data: fsInfoWindow }"></div>',
 	eventful: '<div class="eventful center-text">Loading Eventful data . . .' +
@@ -20,12 +22,10 @@ var infoWindowTemplates = {
 	eventLink: `\`<div class="event-link overflow-ellipsis"><a href="\` +
 		\`\${eventURL}" target="_blank" title="\${title}">\${title}</a>\` +
 		\`</div>\``,
-	errorMsg: `\`<span class="infowindow-error">Error retrieving \` +
-		\`\${errorSrc} data (\${errorCode}\${errorMsg}).</span>\``,
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
-		\`data-bind="visible: $root.getMuseum(\${id}).fav(), click: \` +
-		\`function() { $root.toggleFav($root.getMuseum(\${id})) }">&#9733;\` +
+		\`data-bind="visible: getMuseum(\${id}).fav(), click: \` +
+		\`function() { toggleFav(getMuseum(\${id})) }">&#9733;\` +
 		\`</a><a class="star-def" href="#" data-bind="visible: \` +
-		\`!$root.getMuseum(\${id}).fav(), click: function() { \` +
-		\`$root.toggleFav($root.getMuseum(\${id})) }">&#9734;</a></div>\``
+		\`!getMuseum(\${id}).fav(), click: function() { \` +
+		\`toggleFav(getMuseum(\${id})) }">&#9734;</a></div>\``
 };

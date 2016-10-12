@@ -152,6 +152,42 @@ var ViewModel = function() {
 			foursquare: ko.observable()
 		}
 	};
+	/**
+	* Stores Eventful infowindow data
+	*/
+	self.evInfoWindow = {
+		events: ko.observableArray()
+	};
+	/**
+	* Stores infowindow error data
+	*/
+	self.infoWindowError = {
+		src: ko.observable(),
+		codeStor: ko.observable(),
+		code: ko.computed({
+			read: function() {
+				var code = this.infoWindowError.codeStor() + ' ';
+
+				return code;
+			},
+			write: function(code) {
+				var codeStor = this.infoWindowError.codeStor;
+				codeStor(code);
+			},
+			owner: self,
+			deferEvaluation: true
+		}),
+		msg: ko.observable(),
+		cID: ko.computed({
+			read: function() {
+				var src = this.infoWindowError.src();
+
+				return src.toLowerCase();
+			},
+			owner: self,
+			deferEvaluation: true
+		})
+	};
 };
 
 /**

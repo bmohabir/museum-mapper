@@ -467,7 +467,7 @@ function openInfoWindow(marker) {
 
     // call APIs (asynchronous)
 	getFoursquareData(marker);
-    //getEventfulData(marker);
+    getEventfulData(marker);
 
     // deselect marker if info window closed
     infoWindow.addListener('closeclick', function() {
@@ -475,8 +475,8 @@ function openInfoWindow(marker) {
     });
 
 	// enables fav star KO binding, needed for dynamically injected elements
-	var $infoWindowHead = $(".infowindow-head")[0];
-	ko.applyBindingsToDescendants(viewModel, $infoWindowHead);
+	var $infoWindow = $(".infowindow")[0];
+	ko.applyBindingsToDescendants(viewModel, $infoWindow);
 }
 
 /**
@@ -502,19 +502,21 @@ function refreshInfoWindow() {
 * @parameter {object} data - Error data
 */
 function foursquareRenderError(data) {
-	var content = infoWindow.content;
-	var $content = $(content);
-	var $foursquare = $content.find('.foursquare').text('');
-	var errorSrc = 'Foursquare';
-	var errorMsg = data.text;
-	// Ensure final error message makes sense
-	var errorCode = (errorMsg === 'timeout') ? '' : (
-		data.error > 0 ? data.error + ' ' : 'Unknown ' );
-	var $error = $(eval(infoWindowTemplates.errorMsg));
-
-	$foursquare.append($error);
-	content = $content[0].outerHTML;
+	var error = viewModel.infoWindowError;
+	var current = infoWindow.content;
+	var template = infoWindowTemplates.error;
+	var $template = $(template);
+	var $current = $(current).append($template);
+	var content = $current[0].outerHTML;
 	infoWindow.setContent(content);
+
+	var src = 'Foursquare';
+	var msg = data.text;
+	var code = (msg === 'timeout') ? null : (
+		data.error > 0 ? data.error : 'Unknown' );
+	error.src(src);
+	error.msg(msg);
+	error.code(code);
 
 	refreshInfoWindow();
 }
@@ -631,6 +633,7 @@ function foursquareRenderInfo(data) {
 
 	var content = $current[0].outerHTML;
 	infoWindow.setContent(content);
+
 	refreshInfoWindow();
 }
 
@@ -696,24 +699,26 @@ function getFoursquareData(marker) {
 */
 function eventfulRenderError(data) {
 	// don't render until Foursquare section is populated
-	var fsDone = !!$('.foursquare-info')[0];
-	var fsError = !!$('.infowindow-error')[0];
-	if (!fsDone && !fsError) {
+	var fsLoaded = !!$('.foursquare')[0];
+	if (!fsLoaded) {
 		setTimeout(function(){ eventfulRenderError(data); }, 500);
 		return;
 	}
 
-	var content = infoWindow.content;
-	var $content = $(content);
-	var $eventful = $content.find('.eventful').text('');
-	var errorSrc = 'Eventful';
-	var errorCode = data.error > 1 ? data.error + ' ' : '';
-	var errorMsg = data.text;
-	var $error = $(eval(infoWindowTemplates.errorMsg));
-
-	$eventful.append($error);
-	content = $content[0].outerHTML;
+	var error = viewModel.infoWindowError;
+	var current = infoWindow.content;
+	var template = infoWindowTemplates.error;
+	var $template = $(template);
+	var $current = $(current).append($template);
+	var content = $current[0].outerHTML;
 	infoWindow.setContent(content);
+
+	var src = 'Eventful';
+	var msg = data.text;
+	var code = data.error > 1 ? data.error : null;
+	error.src(src);
+	error.msg(msg);
+	error.code(code);
 
 	refreshInfoWindow();
 }
@@ -724,9 +729,8 @@ function eventfulRenderError(data) {
 */
 function eventfulRenderInfo(data) {
 	// don't render until Foursquare section is populated
-	var fsDone = !!$('.foursquare-info')[0];
-	var fsError = !!$('.infowindow-error')[0];
-	if (!fsDone && !fsError) {
+	var fsLoaded = !!$('.foursquare')[0];
+	if (!fsLoaded) {
 		setTimeout(function(){ eventfulRenderInfo(data); }, 500);
 		return;
 	}
@@ -826,8 +830,6 @@ function evErrorCallback(data) {
 
 		eventfulRenderError(result);
 	}
-
-	//console.log(data); // for testing purposes
 }
 
 /**
@@ -840,7 +842,7 @@ function getEventfulData(marker) {
 	var app_key = '52bmjJbHHhT48jbh'
 	var urlPrefix = 'https://api.eventful.com/json/events/search?app_key=';
 	var location = '&location=' + venueID;
-	var url = urlPrefix + app_key + location;
+	var url = urlPrefix + 'b';//app_key + location;
 
 	$.get({
 		url: url,
