@@ -166,7 +166,8 @@ var ViewModel = function() {
 		codeStor: ko.observable(),
 		code: ko.computed({
 			read: function() {
-				var code = this.infoWindowError.codeStor() + ' ';
+				var codeStor = this.infoWindowError.codeStor();
+				var code = codeStor ? codeStor + ' ' : false;
 
 				return code;
 			},
