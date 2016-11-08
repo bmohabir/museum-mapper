@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device=width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>NYC Museums</title>
 		<!-- build:css css/styles.css -->
 		<link rel="stylesheet" href="css/layout.css">
@@ -82,6 +82,22 @@
 		            <span class="social-media"><span data-bind="if: socialMedia.facebook"><a data-bind="attr: { href: socialMedia.facebook }" target="_blank">Facebook</a>&nbsp;|&nbsp;</span><span data-bind="if: socialMedia.twitter"><a data-bind="attr: { href: socialMedia.twitter }" target="_blank">Twitter</a>&nbsp;|&nbsp;</span><a data-bind="attr: { href: socialMedia.foursquare }" target="_blank">Foursquare</a></span>
 		        </div>
 		    </div>
+		</script>
+		<script type="text/html" id="eventful-template">
+			<div><h4 class="eventful-title">Upcoming Events</h4></div>
+			<!-- ko ifnot: events().length -->
+			<div class="eventful-msg"><span>No events found</span></div>
+			<!-- /ko -->
+			<!-- ko if: events().length -->
+			<div data-bind="foreach: events">
+				<div class="infotext-flex">
+					<div class="event-date" data-bind="html: $data.date"></div>
+					<div class="event-link overflow-ellipsis">
+						<a data-bind="text: $data.title, attr: { href: $data.url, title: $data.title }" target="_blank"></a>
+					</div>
+				</div>
+			</div>
+			<!-- /ko -->
 		</script>
 		<!-- build:libjs js/lib.js -->
 		<script src="lib/jquery.js"></script>

@@ -159,6 +159,10 @@ var ViewModel = function() {
 		events: ko.observableArray()
 	};
 	/**
+	* Stores infowindow width
+	*/
+	self.iWidth = ko.observable();
+	/**
 	* Stores infowindow error data
 	*/
 	self.infoWindowError = {

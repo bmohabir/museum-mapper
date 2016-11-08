@@ -488,8 +488,8 @@ function refreshInfoWindow() {
 	infoWindow.open(map, marker);
 	// center the marker and then shift the map downward
 	// by half of the infowindow height
-	map.setCenter(marker.getPosition());
 	var offset = $('.infowindow').height() / 2;
+	map.setCenter(marker.getPosition());
 	map.panBy(0, -1 * offset);
 
 	// enables KO bindings, needed for dynamically injected elements
@@ -728,48 +728,50 @@ function eventfulRenderError(data) {
 * @parameter {object} data - Eventful museum data
 */
 function eventfulRenderInfo(data) {
-	// don't render until Foursquare section is populated
+	// don't run until Foursquare section is populated
 	var fsLoaded = !!$('.foursquare')[0];
 	if (!fsLoaded) {
-		setTimeout(function(){ eventfulRenderInfo(data); }, 500);
-		return;
+		setTimeout(function() {
+			eventfulRenderInfo(data);
+		}, 500);
 	}
 
+	// preserve infowindow width from foursquare render
 	var $infowindow = $('.infowindow');
-	var content = infoWindow.content;
-	var $content = $(content);
-	var currentWidth = fsError ? 320 : $infowindow.width();
-	var $evHead = $(infoWindowTemplates.evHead);
-	var $noEvents = $(infoWindowTemplates.noEvents);
-	var $eventful = $content.find('.eventful').text('')
-		.removeClass('center-text')
-		.append($evHead);
+	var currentWidth = $infowindow.width() + 'px';
+	viewModel.iWidth(currentWidth);
 
-	data.length ? (
-		data.forEach(function(eventObj) {
-			var startTime = eventObj.start_time;
-			var date = startTime.split(' ')[0];
-			var month = date.charAt(5) === '0' ? date.slice(6, 7) : (
-				date.slice(5, 7) );
-			var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
-				date.slice(8, 10) );
-			var formattedDate = month + '-' + day;
-			var title = eventObj.title;
-			var eventURL = eventObj.url;
-			var $eventTime = $(eval(infoWindowTemplates.eventTime));
-			var $eventLink = $(eval(infoWindowTemplates.eventLink));
-			var $eventItem = $(infoWindowTemplates.eventItem).append($eventTime)
-				.append($eventLink);
+	var evData = viewModel.evInfoWindow;
+	var events = [];
+	var current = infoWindow.content;
+	var $current =  $(current);
+	var template = infoWindowTemplates.eventful;
+	var $template = $(template);
+	$current.append($template);
 
-			$eventful.append($eventItem);
-		})
-	) : $eventful.append($noEvents);
+	data.forEach(function(eventObj) {
+		var startTime = eventObj.start_time;
+		var date = startTime.split(' ')[0];
+		var month = date.charAt(5) === '0' ? date.slice(6, 7) : (
+			date.slice(5, 7) );
+		var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
+			date.slice(8, 10) );
+		var formattedDate = month + '-' + day;
+		var title = eventObj.title;
+		var eventURL = eventObj.url;
+		var eventData = {
+			date: formattedDate + '&nbsp;&nbsp;',
+			title: title,
+			url: eventURL
+		};
+		events.push(eventData);
+	});
+	evData.events(events);
+	console.log(!evData.events().length);
 
-	content = $content[0].outerHTML;
+	var content = $current[0].outerHTML;
 	infoWindow.setContent(content);
 
-	// prevent events section changing width of infowindow
-	$infowindow.width(currentWidth);
 	refreshInfoWindow();
 }
 
@@ -842,7 +844,7 @@ function getEventfulData(marker) {
 	var app_key = '52bmjJbHHhT48jbh'
 	var urlPrefix = 'https://api.eventful.com/json/events/search?app_key=';
 	var location = '&location=' + venueID;
-	var url = urlPrefix + 'b';//app_key + location;
+	var url = urlPrefix + app_key + location;
 
 	$.get({
 		url: url,
