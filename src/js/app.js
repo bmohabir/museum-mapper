@@ -756,7 +756,7 @@ function eventfulRenderInfo(data) {
 			date.slice(5, 7) );
 		var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
 			date.slice(8, 10) );
-		var formattedDate = month + '-' + day;
+		var formattedDate = month + '/' + day;
 		var title = eventObj.title;
 		var eventURL = eventObj.url;
 		var eventData = {
