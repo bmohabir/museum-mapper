@@ -84,6 +84,7 @@
 		    </div>
 		</script>
 		<script type="text/html" id="eventful-template">
+			<hr data-bind="style: { width: $root.iWidth }">
 			<div><h4 class="eventful-title">Upcoming Events</h4></div>
 			<!-- ko ifnot: events().length -->
 			<div class="eventful-msg"><span>No events found</span></div>

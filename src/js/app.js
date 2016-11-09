@@ -455,10 +455,9 @@ function openInfoWindow(marker) {
 		.append($favStar);
 	var $foursquare = $(infoWindowTemplates.foursquare);
 	var $eventful = $(infoWindowTemplates.eventful);
-	var $root = $(infoWindowTemplates.root).append($head);
-		//.append($foursquare)
-		//.append($('<hr>'))
-		//.append($eventful);
+	var $root = $(infoWindowTemplates.root).append($head)
+		.append($foursquare)
+		.append($eventful);
 	var content = $root[0].outerHTML;
 
 	infoWindow.setContent(content);
@@ -488,9 +487,9 @@ function refreshInfoWindow() {
 	infoWindow.open(map, marker);
 	// center the marker and then shift the map downward
 	// by half of the infowindow height
-	var offset = $('.infowindow').height() / 2;
+	//var offset = $('.infowindow').height() / 2;
 	map.setCenter(marker.getPosition());
-	map.panBy(0, -1 * offset);
+	//map.panBy(0, -1 * offset);
 
 	// enables KO bindings, needed for dynamically injected elements
 	var $infowindow = $(".infowindow")[0];
@@ -504,9 +503,8 @@ function refreshInfoWindow() {
 function foursquareRenderError(data) {
 	var error = viewModel.infoWindowError;
 	var current = infoWindow.content;
-	var template = infoWindowTemplates.error;
-	var $template = $(template);
-	var $current = $(current).append($template);
+	var $error = $(infoWindowTemplates.error);
+	var $current = $(current).append($error);
 	var content = $current[0].outerHTML;
 	infoWindow.setContent(content);
 
@@ -528,11 +526,11 @@ function foursquareRenderError(data) {
 function foursquareRenderInfo(data) {
 	var fsData = viewModel.fsInfoWindow;
 	var name = infoWindow.marker.title;
-	var current = infoWindow.content;
-	var $current = $(current);
-	var template = infoWindowTemplates.foursquare;
-	var $template = $(template);
-	$current.append($template);
+	//var current = infoWindow.content;
+	//var $current = $(current);
+	//var template = infoWindowTemplates.foursquare;
+	//var $template = $(template);
+	//$current.append($template);
 	// Used when evaluating certain templates
 	fsData.name(name);
 
@@ -631,10 +629,10 @@ function foursquareRenderInfo(data) {
 	var fsURL = data.canonicalUrl;
 	fsData.socialMedia.foursquare(fsURL);
 
-	var content = $current[0].outerHTML;
-	infoWindow.setContent(content);
+	//var content = $current[0].outerHTML;
+	//infoWindow.setContent(content);
 
-	refreshInfoWindow();
+	//refreshInfoWindow();
 }
 
 /**
@@ -707,9 +705,8 @@ function eventfulRenderError(data) {
 
 	var error = viewModel.infoWindowError;
 	var current = infoWindow.content;
-	var template = infoWindowTemplates.error;
-	var $template = $(template);
-	var $current = $(current).append($template);
+	var $error = $(infoWindowTemplates.error);
+	var $current = $(current).append($error);
 	var content = $current[0].outerHTML;
 	infoWindow.setContent(content);
 
@@ -743,11 +740,11 @@ function eventfulRenderInfo(data) {
 
 	var evData = viewModel.evInfoWindow;
 	var events = [];
-	var current = infoWindow.content;
-	var $current =  $(current);
-	var template = infoWindowTemplates.eventful;
-	var $template = $(template);
-	$current.append($template);
+	//var current = infoWindow.content;
+	//var $current =  $(current);
+	//var template = infoWindowTemplates.eventful;
+	//var $template = $(template);
+	//$current.append($template);
 
 	data.forEach(function(eventObj) {
 		var startTime = eventObj.start_time;
@@ -767,12 +764,11 @@ function eventfulRenderInfo(data) {
 		events.push(eventData);
 	});
 	evData.events(events);
-	console.log(!evData.events().length);
 
-	var content = $current[0].outerHTML;
-	infoWindow.setContent(content);
+	//var content = $current[0].outerHTML;
+	//infoWindow.setContent(content);
 
-	refreshInfoWindow();
+	//refreshInfoWindow();
 }
 
 /**
