@@ -1,3 +1,6 @@
+/**
+* Google Maps vars
+*/
 var map, bounds, infoWindow;
 
 /**
@@ -430,14 +433,14 @@ function selectMarker(clickItem) {
 
 /**
 * Cancels animation, reverts icon and closes infowindow for selected marker
-* Also clears Knockout
+* Also calls viewModel.clearInfoWindow to clear data from previous marker
 * @parameter {object} marker - clicked marker object
 */
 function deselectMarker(marker) {
 	marker.setAnimation(null);
 	marker.setIcon(marker.icons.def);
 	infoWindow.close();
-
+	viewModel.clearInfoWindow();
 }
 
 /**
@@ -488,12 +491,24 @@ function refreshInfoWindow() {
 	// center the marker and then shift the map downward
 	// by half of the infowindow height
 	//var offset = $('.infowindow').height() / 2;
-	map.setCenter(marker.getPosition());
+	//map.setCenter(marker.getPosition());
 	//map.panBy(0, -1 * offset);
 
 	// enables KO bindings, needed for dynamically injected elements
 	var $infowindow = $(".infowindow")[0];
 	ko.applyBindingsToDescendants(viewModel, $infowindow);
+}
+
+/**
+* Centers infowindow
+*/
+function reposInfoWindow() {
+	var marker = infoWindow.marker;
+	var offset = ($('.infowindow').height() / 2) + 6;
+	console.log(offset);
+
+	map.setCenter(marker.getPosition());
+	map.panBy(0, -1 * offset);
 }
 
 /**
@@ -745,25 +760,28 @@ function eventfulRenderInfo(data) {
 	//var template = infoWindowTemplates.eventful;
 	//var $template = $(template);
 	//$current.append($template);
-
-	data.forEach(function(eventObj) {
-		var startTime = eventObj.start_time;
-		var date = startTime.split(' ')[0];
-		var month = date.charAt(5) === '0' ? date.slice(6, 7) : (
-			date.slice(5, 7) );
-		var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
-			date.slice(8, 10) );
-		var formattedDate = month + '/' + day;
-		var title = eventObj.title;
-		var eventURL = eventObj.url;
-		var eventData = {
-			date: formattedDate + '&nbsp;&nbsp;',
-			title: title,
-			url: eventURL
-		};
-		events.push(eventData);
-	});
-	evData.events(events);
+	if (data.length) {
+		data.forEach(function(eventObj) {
+			var startTime = eventObj.start_time;
+			var date = startTime.split(' ')[0];
+			var month = date.charAt(5) === '0' ? date.slice(6, 7) : (
+				date.slice(5, 7) );
+			var day = date.charAt(8) === '0' ? date.slice(9, 10) : (
+				date.slice(8, 10) );
+			var formattedDate = month + '/' + day;
+			var title = eventObj.title;
+			var eventURL = eventObj.url;
+			var eventData = {
+				date: formattedDate + '&nbsp;&nbsp;',
+				title: title,
+				url: eventURL
+			};
+			events.push(eventData);
+		});
+		evData.events(events);
+	} else {
+		evData.noEvents(true);
+	}
 
 	//var content = $current[0].outerHTML;
 	//infoWindow.setContent(content);
@@ -888,7 +906,7 @@ function filterMarkers(visibleIDs) {
 * initial infowindow view state (if infowindow is open)
 */
 function mapReset() {
-	infoWindow.map ? refreshInfoWindow() : map.fitBounds(bounds);
+	infoWindow.map ? reposInfoWindow() : map.fitBounds(bounds);
 }
 
 // binds reset map button

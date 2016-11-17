@@ -90,20 +90,20 @@ var ViewModel = function() {
 		selectMarker(museum);
 	};
 	/**
-	* Fires when bound fav star is clicked, toggles fav status in list
-	* and calls `markerToggleFav` to toggle marker fav status
-	*/
-	self.toggleFav = function(museum) {
-		museum.toggleFav();
-		markerToggleFav(museum, museum.fav());
-	};
-	/**
 	* Returns a single museum object by ID, called by view as needed
 	* @parameter {number} id - id property (index) of museum
 	* @returns {object} - museum object
 	*/
 	self.getMuseum = function(id) {
 		return model.museums[id];
+	};
+	/**
+	* Fires when bound fav star is clicked, toggles fav status in list
+	* and calls `markerToggleFav` to toggle marker fav status
+	*/
+	self.toggleFav = function(museum) {
+		museum.toggleFav();
+		markerToggleFav(museum, museum.fav());
 	};
 	/**
 	* Animates and removes item from list
@@ -127,36 +127,68 @@ var ViewModel = function() {
 		}
 	};
 	/**
+	* Centers infowindow after content is loaded
+	*/
+	self.posInfoWindow = function() {
+		reposInfoWindow();
+	};
+	/**
+	* For making blank fsInfoWindow object
+	* @returns {object}
+	*/
+	self.newFsInfoWindow = function() {
+		var fsInfoWindow = {
+			name: ko.observable(),
+			categories: ko.observableArray(),
+			iconSize: ko.observable(),
+			photo: ko.observable(),
+			photoSize: ko.observable(),
+			address: {
+				lineOne: ko.observable(),
+				lineTwo: ko.observable()
+			},
+			phone: ko.observable(),
+			hours: ko.observableArray(),
+			status: ko.observable(),
+			statusColor: ko.observable(),
+			rating: ko.observable(),
+			ratingColor: ko.observable(),
+			url: ko.observable(),
+			socialMedia: {
+				facebook: ko.observable(),
+				twitter: ko.observable(),
+				foursquare: ko.observable()
+			}
+		};
+
+		return fsInfoWindow;
+	};
+	/**
+	* For making blank evInfoWindow object
+	* @returns {object}
+	*/
+	self.newEvInfoWindow = function() {
+		var evInfoWindow = {
+			noEvents: ko.observable(false),
+			events: ko.observableArray()
+		};
+
+		return evInfoWindow;
+	};
+	/**
 	* Stores Foursquare infowindow data
 	*/
-	self.fsInfoWindow = {
-		name: ko.observable(),
-		categories: ko.observableArray(),
-		iconSize: ko.observable(),
-		photo: ko.observable(),
-		photoSize: ko.observable(),
-		address: {
-			lineOne: ko.observable(),
-			lineTwo: ko.observable()
-		},
-		phone: ko.observable(),
-		hours: ko.observableArray(),
-		status: ko.observable(),
-		statusColor: ko.observable(),
-		rating: ko.observable(),
-		ratingColor: ko.observable(),
-		url: ko.observable(),
-		socialMedia: {
-			facebook: ko.observable(),
-			twitter: ko.observable(),
-			foursquare: ko.observable()
-		}
-	};
+	self.fsInfoWindow = self.newFsInfoWindow();
 	/**
 	* Stores Eventful infowindow data
 	*/
-	self.evInfoWindow = {
-		events: ko.observableArray()
+	self.evInfoWindow = self.newEvInfoWindow();
+	/**
+	* Clears Foursquare, Eventful and error data for infowindow
+	*/
+	self.clearInfoWindow = function() {
+		self.fsInfoWindow = self.newFsInfoWindow();
+		self.evInfoWindow = self.newEvInfoWindow();
 	};
 	/**
 	* Stores infowindow width

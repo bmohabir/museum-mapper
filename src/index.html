@@ -86,11 +86,11 @@
 		<script type="text/html" id="eventful-template">
 			<hr data-bind="style: { width: $root.iWidth }">
 			<div><h4 class="eventful-title">Upcoming Events</h4></div>
-			<!-- ko ifnot: events().length -->
+			<!-- ko if: noEvents() -->
 			<div class="eventful-msg"><span>No events found</span></div>
 			<!-- /ko -->
-			<!-- ko if: events().length -->
-			<div data-bind="foreach: events">
+			<!-- ko ifnot: noEvents() -->
+			<div data-bind="foreach: { data: events, afterRender: $root.posInfoWindow }">
 				<div class="infotext-flex">
 					<div class="event-date" data-bind="html: $data.date"></div>
 					<div class="event-link overflow-ellipsis">

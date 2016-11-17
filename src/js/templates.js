@@ -9,9 +9,11 @@ var infoWindowTemplates = {
 	head: '<div class="infowindow-head"></div>',
 	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
 	error: '<div data-bind="css: infoWindowError.cID, ' +
-		'template: { name: \'error-template\', data: infoWindowError }"></div>',
+		'template: { name: \'error-template\', data: infoWindowError, ' +
+		'afterRender: posInfoWindow }"></div>',
 	foursquare: '<div class="foursquare" data-bind="template: { name: ' +
-		'\'foursquare-template\', data: fsInfoWindow }"></div>',
+		'\'foursquare-template\', data: fsInfoWindow, afterRender: ' +
+		'posInfoWindow }"></div>',
 	eventful: '<div class="eventful" data-bind="template: { name: ' +
 		'\'eventful-template\', data: evInfoWindow }, style: { maxWidth: ' +
 		'iWidth }"></div>',
