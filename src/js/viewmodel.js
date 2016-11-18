@@ -184,16 +184,17 @@ var ViewModel = function() {
 	*/
 	self.evInfoWindow = self.newEvInfoWindow();
 	/**
+	* Stores infowindow width
+	*/
+	self.iWidth = ko.observable();
+	/**
 	* Clears Foursquare, Eventful and error data for infowindow
 	*/
 	self.clearInfoWindow = function() {
 		self.fsInfoWindow = self.newFsInfoWindow();
 		self.evInfoWindow = self.newEvInfoWindow();
+		self.iWidth(getihWidth());
 	};
-	/**
-	* Stores infowindow width
-	*/
-	self.iWidth = ko.observable();
 	/**
 	* Stores infowindow error data
 	*/

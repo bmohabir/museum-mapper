@@ -504,11 +504,19 @@ function refreshInfoWindow() {
 */
 function reposInfoWindow() {
 	var marker = infoWindow.marker;
-	var offset = ($('.infowindow').height() / 2) + 6;
+	var offset = ($('.infowindow').height() / 2) + 10;
 	console.log(offset);
 
 	map.setCenter(marker.getPosition());
 	map.panBy(0, -1 * offset);
+}
+
+/**
+* Gets width of .infowindow-head
+* @returns {string} - width of .infowindow-head in pixels
+*/
+function getihWidth() {
+	return $('.infowindow-head').width() + 'px';
 }
 
 /**
@@ -741,7 +749,7 @@ function eventfulRenderError(data) {
 */
 function eventfulRenderInfo(data) {
 	// don't run until Foursquare section is populated
-	var fsLoaded = !!$('.foursquare')[0];
+	var fsLoaded = !!$('.infotext-flex').find('span').text();
 	if (!fsLoaded) {
 		setTimeout(function() {
 			eventfulRenderInfo(data);
@@ -749,8 +757,8 @@ function eventfulRenderInfo(data) {
 	}
 
 	// preserve infowindow width from foursquare render
-	var $infowindow = $('.infowindow');
-	var currentWidth = $infowindow.width() + 'px';
+	var $fsInfo = $('.foursquare-info');
+	var currentWidth = ($fsInfo.width() + img.photoSize() + 5) + 'px';
 	viewModel.iWidth(currentWidth);
 
 	var evData = viewModel.evInfoWindow;
