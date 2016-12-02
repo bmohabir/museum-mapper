@@ -87,7 +87,7 @@ var ViewModel = function() {
 	* with museum `id` property as parameter
 	*/
 	self.clickItem = function(museum) {
-		selectMarker(museum);
+		clickMarker(museum);
 	};
 	/**
 	* Returns a single museum object by ID, called by view as needed
@@ -133,11 +133,11 @@ var ViewModel = function() {
 		reposInfoWindow();
 	};
 	/**
-	* For making blank fsInfoWindow object
+	* For making blank fsData object
 	* @returns {object}
 	*/
-	self.newFsInfoWindow = function() {
-		var fsInfoWindow = {
+	self.newFsData = function() {
+		var fsData = {
 			name: ko.observable(),
 			categories: ko.observableArray(),
 			iconSize: ko.observable(),
@@ -161,70 +161,73 @@ var ViewModel = function() {
 			}
 		};
 
-		return fsInfoWindow;
+		return fsData;
 	};
 	/**
-	* For making blank evInfoWindow object
+	* For making blank evData object
 	* @returns {object}
 	*/
-	self.newEvInfoWindow = function() {
-		var evInfoWindow = {
+	self.newEvData = function() {
+		var evData = {
 			noEvents: ko.observable(false),
 			events: ko.observableArray()
 		};
 
-		return evInfoWindow;
+		return evData;
 	};
 	/**
-	* Stores Foursquare infowindow data
+	* Error data class
+	* @constructor
 	*/
-	self.fsInfoWindow = self.newFsInfoWindow();
-	/**
-	* Stores Eventful infowindow data
-	*/
-	self.evInfoWindow = self.newEvInfoWindow();
-	/**
-	* Stores infowindow width
-	*/
-	self.iWidth = ko.observable();
-	/**
-	* Clears Foursquare, Eventful and error data for infowindow
-	*/
-	self.clearInfoWindow = function() {
-		self.fsInfoWindow = self.newFsInfoWindow();
-		self.evInfoWindow = self.newEvInfoWindow();
-		self.iWidth(getihWidth());
-	};
-	/**
-	* Stores infowindow error data
-	*/
-	self.infoWindowError = {
-		src: ko.observable(),
-		codeStor: ko.observable(),
-		code: ko.computed({
+	self.errorData = function() {
+		this.src = ko.observable();
+		this.codeStor = ko.observable();
+		this.code = ko.computed({
 			read: function() {
-				var codeStor = this.infoWindowError.codeStor();
+				var codeStor = this.codeStor();
 				var code = codeStor ? codeStor + ' ' : false;
 
 				return code;
 			},
 			write: function(code) {
-				var codeStor = this.infoWindowError.codeStor;
+				var codeStor = this.codeStor;
 				codeStor(code);
 			},
-			owner: self,
+			owner: this,
 			deferEvaluation: true
-		}),
-		msg: ko.observable(),
-		cID: ko.computed({
-			read: function() {
-				var src = this.infoWindowError.src();
-
-				return src.toLowerCase();
-			},
-			owner: self,
-			deferEvaluation: true
-		})
+		});
+		this.msg = ko.observable();
+	};
+	/**
+	* Stores infowindow response data and methods for rendering
+	*/
+	self.infoWindowData = {
+		fsData: self.newFsData(),
+		evData: self.newEvData(),
+		fsErrorData: new self.errorData(),
+		evErrorData: new self.errorData(),
+		fsStatus: ko.observable('ready'),
+		evStatus: ko.observable('ready'),
+		fsLoaded: function() {
+			this.fsStatus('loaded');
+		},
+		evLoaded: function() {
+			this.evStatus('loaded');
+		},
+		fsError: function() {
+			this.fsStatus('error');
+		},
+		evError: function() {
+			this.evStatus('error');
+		},
+		clearInfoWindow: function() {
+			this.fsStatus('ready');
+			this.evStatus('ready');
+			this.fsData = self.newFsData();
+			this.evData = self.newEvData();
+			this.width(getihWidth());
+		},
+		width: ko.observable()
 	};
 };
 

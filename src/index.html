@@ -52,6 +52,66 @@
 			<div class="app center-text" id="map">Please check your internet connection and verify JavaScript is enabled</div>
 			<input type="button" class="map-reset" value="Reset View">
 		</div>
+		<script type="text/html" id="infowindow-template">
+			<!-- ko if: fsStatus() == 'error' -->
+			<div data-bind="with: fsErrorData" class="foursquare">
+			<div class="infowindow-error">Error retrieving <span data-bind="text: src"></span> data (<span data-bind="if: code"><span data-bind="text: code"></span></span><span data-bind="text: msg"></span>).</div>
+			</div>
+			<!-- /ko -->
+			<!-- ko if: fsStatus() == 'loaded' -->
+			<div class="foursquare" data-bind="with: fsData">
+				<div class="foursquare-icons" data-bind="foreach: categories"><img data-bind="attr: { src: $data.url, alt: $data.name, title: $data.name, width: $parent.iconSize, height: $parent.iconSize }"></div>
+			    <div class="foursquare-main">
+			        <div class="foursquare-photo"><img data-bind="attr: { src: photo, alt: name, width: photoSize, height: photoSize }"></div>
+			        <div class="foursquare-info">
+			            <div class="infotext-flex">
+			                <div>Address:&nbsp;</div>
+			                <div class="formatted-address">
+			                	<span data-bind="text: address.lineOne"></span><br>
+			                	<span data-bind="text: address.lineTwo"></span>
+			                </div>
+			            </div>
+			            <div>Phone: <span data-bind="text: phone"></span></div>
+			            <div class="infotext-flex">
+			                <div>Hours:&nbsp;</div>
+			                <div>
+			                	<div data-bind="foreach: hours">
+			                		<span data-bind="text: $data"></span><br>
+		                		</div>
+			                	<span data-bind="text: status, attr: { class: statusColor }"></span>
+			                </div>
+			            </div>
+			            <div>Foursquare Rating: <span class="rating-text" data-bind="text: rating, style: { color: ratingColor }"></span>/10</div>
+			            <div>Website: <a data-bind="text: url, attr: { href: url }" target="_blank"></a></div>
+			            <span class="social-media"><span data-bind="if: socialMedia.facebook"><a data-bind="attr: { href: socialMedia.facebook }" target="_blank">Facebook</a>&nbsp;|&nbsp;</span><span data-bind="if: socialMedia.twitter"><a data-bind="attr: { href: socialMedia.twitter }" target="_blank">Twitter</a>&nbsp;|&nbsp;</span><a data-bind="attr: { href: socialMedia.foursquare }" target="_blank">Foursquare</a></span>
+			        </div>
+			    </div>
+			</div>
+		    <!-- /ko -->
+		    <!-- ko if: evStatus() == 'error' -->
+			<div data-bind="with: evErrorData" class="eventful">
+				<hr data-bind="style: { width: $parent.width }">
+				<div class="infowindow-error">Error retrieving <span data-bind="text: src"></span> data (<span data-bind="if: code"><span data-bind="text: code"></span></span><span data-bind="text: msg"></span>).</div>
+			</div>
+			<!-- /ko -->
+		    <!-- ko if: evStatus() == 'loaded' -->
+		    <div class="eventful" data-bind="with: evData, style: { maxWidth: width }">
+			    <hr data-bind="style: { width: $parent.width }">
+				<div><h4 class="eventful-title">Upcoming Events</h4></div>
+				<!-- ko if: noEvents() -->
+				<div class="eventful-msg"><span>No events found</span></div>
+				<!-- /ko -->
+				<div data-bind="foreach: { data: events, afterRender: $root.posInfoWindow }">
+					<div class="infotext-flex">
+						<div class="event-date" data-bind="html: $data.date"></div>
+						<div class="event-link overflow-ellipsis">
+							<a data-bind="text: $data.title, attr: { href: $data.url, title: $data.title }" target="_blank"></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		    <!-- /ko -->
+		</script>
 		<script type="text/html" id="error-template">
 			<div class="infowindow-error">Error retrieving <span data-bind="text: src"></span> data (<span data-bind="if: code"><span data-bind="text: code"></span></span><span data-bind="text: msg"></span>).</div>
 		</script>

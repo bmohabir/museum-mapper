@@ -8,15 +8,8 @@ var infoWindowTemplates = {
 	root: '<div class="infowindow"></div>',
 	head: '<div class="infowindow-head"></div>',
 	name: `\`<h3 class="infowindow-title">\${name}</h3>\``,
-	error: '<div data-bind="css: infoWindowError.cID, ' +
-		'template: { name: \'error-template\', data: infoWindowError, ' +
-		'afterRender: posInfoWindow }"></div>',
-	foursquare: '<div class="foursquare" data-bind="template: { name: ' +
-		'\'foursquare-template\', data: fsInfoWindow, afterRender: ' +
-		'posInfoWindow }"></div>',
-	eventful: '<div class="eventful" data-bind="template: { name: ' +
-		'\'eventful-template\', data: evInfoWindow }, style: { maxWidth: ' +
-		'iWidth }"></div>',
+	data: '<div class="infowindow-data" data-bind="template: {name: ' +
+		'\'infowindow-template\', data: infoWindowData }"></div>',
 	star: `\`<div class="star"><a class="star-fav" href="#" \` +
 		\`data-bind="visible: getMuseum(\${id}).fav(), click: \` +
 		\`function() { toggleFav(getMuseum(\${id})) }">&#9733;\` +

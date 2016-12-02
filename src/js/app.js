@@ -403,6 +403,15 @@ function initMarkers() {
 }
 
 /**
+* Calls click event on marker corresponding to museum parameter value
+* @parameter {object} museum - museum object
+*/
+function clickMarker(museum) {
+	var marker = markers[museum.id];
+	google.maps.event.trigger(marker,'click');
+}
+
+/**
 * Animates selected marker and calls `openInfoWindow`
 * also hides menu if view is too narrow
 * @parameter {object} clickItem - marker or museum object
@@ -440,7 +449,8 @@ function deselectMarker(marker) {
 	marker.setAnimation(null);
 	marker.setIcon(marker.icons.def);
 	infoWindow.close();
-	viewModel.clearInfoWindow();
+	var infoWindowData = viewModel.infoWindowData;
+	infoWindowData.clearInfoWindow();
 }
 
 /**
@@ -456,11 +466,9 @@ function openInfoWindow(marker) {
 	var $favStar = $(eval(infoWindowTemplates.star));
 	var $head = $(infoWindowTemplates.head).append($name)
 		.append($favStar);
-	var $foursquare = $(infoWindowTemplates.foursquare);
-	var $eventful = $(infoWindowTemplates.eventful);
+	var $data = $(infoWindowTemplates.data);
 	var $root = $(infoWindowTemplates.root).append($head)
-		.append($foursquare)
-		.append($eventful);
+		.append($data);
 	var content = $root[0].outerHTML;
 
 	infoWindow.setContent(content);
@@ -503,12 +511,15 @@ function refreshInfoWindow() {
 * Centers infowindow
 */
 function reposInfoWindow() {
-	var marker = infoWindow.marker;
-	var offset = ($('.infowindow').height() / 2) + 10;
-	console.log(offset);
+	setTimeout(function() {
+		var marker = infoWindow.marker;
+		// TODO: fix this for better handling of small vheight
+		var offset = ($('.infowindow').height() / 2) + 10;
+		//console.log(offset);
 
-	map.setCenter(marker.getPosition());
-	map.panBy(0, -1 * offset);
+		map.setCenter(marker.getPosition());
+		map.panBy(0, -1 * offset);
+	}, 500);
 }
 
 /**
@@ -524,13 +535,8 @@ function getihWidth() {
 * @parameter {object} data - Error data
 */
 function foursquareRenderError(data) {
-	var error = viewModel.infoWindowError;
-	var current = infoWindow.content;
-	var $error = $(infoWindowTemplates.error);
-	var $current = $(current).append($error);
-	var content = $current[0].outerHTML;
-	infoWindow.setContent(content);
-
+	var infoWindowData = viewModel.infoWindowData;
+	var error = infoWindowData.fsErrorData;
 	var src = 'Foursquare';
 	var msg = data.text;
 	var code = (msg === 'timeout') ? null : (
@@ -539,7 +545,7 @@ function foursquareRenderError(data) {
 	error.msg(msg);
 	error.code(code);
 
-	refreshInfoWindow();
+	infoWindowData.fsError();
 }
 
 /**
@@ -547,14 +553,9 @@ function foursquareRenderError(data) {
 * @parameter {object} data - Foursquare museum data
 */
 function foursquareRenderInfo(data) {
-	var fsData = viewModel.fsInfoWindow;
+	var infoWindowData = viewModel.infoWindowData;
+	var fsData = infoWindowData.fsData;
 	var name = infoWindow.marker.title;
-	//var current = infoWindow.content;
-	//var $current = $(current);
-	//var template = infoWindowTemplates.foursquare;
-	//var $template = $(template);
-	//$current.append($template);
-	// Used when evaluating certain templates
 	fsData.name(name);
 
 	// Icon bar for museum categories
@@ -652,10 +653,7 @@ function foursquareRenderInfo(data) {
 	var fsURL = data.canonicalUrl;
 	fsData.socialMedia.foursquare(fsURL);
 
-	//var content = $current[0].outerHTML;
-	//infoWindow.setContent(content);
-
-	//refreshInfoWindow();
+	infoWindowData.fsLoaded();
 }
 
 /**
@@ -726,12 +724,8 @@ function eventfulRenderError(data) {
 		return;
 	}
 
-	var error = viewModel.infoWindowError;
-	var current = infoWindow.content;
-	var $error = $(infoWindowTemplates.error);
-	var $current = $(current).append($error);
-	var content = $current[0].outerHTML;
-	infoWindow.setContent(content);
+	var infoWindowData = viewModel.infoWindowData;
+	var error = infoWindowData.evErrorData;
 
 	var src = 'Eventful';
 	var msg = data.text;
@@ -740,7 +734,7 @@ function eventfulRenderError(data) {
 	error.msg(msg);
 	error.code(code);
 
-	refreshInfoWindow();
+	infoWindowData.evError();
 }
 
 /**
@@ -756,18 +750,16 @@ function eventfulRenderInfo(data) {
 		}, 500);
 	}
 
+	var infoWindowData = viewModel.infoWindowData;
 	// preserve infowindow width from foursquare render
 	var $fsInfo = $('.foursquare-info');
 	var currentWidth = ($fsInfo.width() + img.photoSize() + 5) + 'px';
-	viewModel.iWidth(currentWidth);
+	infoWindowData.width(currentWidth);
 
-	var evData = viewModel.evInfoWindow;
+	//var evData = viewModel.evInfoWindow;
+	var evData = infoWindowData.evData;
 	var events = [];
-	//var current = infoWindow.content;
-	//var $current =  $(current);
-	//var template = infoWindowTemplates.eventful;
-	//var $template = $(template);
-	//$current.append($template);
+
 	if (data.length) {
 		data.forEach(function(eventObj) {
 			var startTime = eventObj.start_time;
@@ -791,10 +783,7 @@ function eventfulRenderInfo(data) {
 		evData.noEvents(true);
 	}
 
-	//var content = $current[0].outerHTML;
-	//infoWindow.setContent(content);
-
-	//refreshInfoWindow();
+	infoWindowData.evLoaded();
 }
 
 /**
@@ -803,7 +792,6 @@ function eventfulRenderInfo(data) {
 * @parameter {object} data - Eventful API response JSON
 */
 function evSuccessCallback(data) {
-	//console.log(data);
 	if (data.total_items) {
 		// data.events.event contains an array of event objects for multiple
 		// events, but contains the event object itself for only one event
@@ -811,7 +799,6 @@ function evSuccessCallback(data) {
 			data.events.event ) : [data.events.event] : [];
 
 		eventfulRenderInfo(result);
-		//console.log(result); // for testing purposes
 	} else {
 		// Eventful uses JSONP, so we need to manually pass unexpected
 		// responses to the error handler
