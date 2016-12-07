@@ -133,7 +133,7 @@ var ViewModel = function() {
 		reposInfoWindow();
 	};
 	/**
-	* For making blank fsData object
+	* Makes blank fsData object
 	* @returns {object}
 	*/
 	self.newFsData = function() {
@@ -164,7 +164,7 @@ var ViewModel = function() {
 		return fsData;
 	};
 	/**
-	* For making blank evData object
+	* Makes blank evData object
 	* @returns {object}
 	*/
 	self.newEvData = function() {
@@ -179,7 +179,7 @@ var ViewModel = function() {
 	* Error data class
 	* @constructor
 	*/
-	self.errorData = function() {
+	self.ErrorData = function() {
 		this.src = ko.observable();
 		this.codeStor = ko.observable();
 		this.code = ko.computed({
@@ -204,8 +204,8 @@ var ViewModel = function() {
 	self.infoWindowData = {
 		fsData: self.newFsData(),
 		evData: self.newEvData(),
-		fsErrorData: new self.errorData(),
-		evErrorData: new self.errorData(),
+		fsErrorData: new self.ErrorData(),
+		evErrorData: new self.ErrorData(),
 		fsStatus: ko.observable('ready'),
 		evStatus: ko.observable('ready'),
 		fsLoaded: function() {

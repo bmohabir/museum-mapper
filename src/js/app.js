@@ -742,21 +742,22 @@ function eventfulRenderError(data) {
 * @parameter {object} data - Eventful museum data
 */
 function eventfulRenderInfo(data) {
-	// don't run until Foursquare section is populated
-	var fsLoaded = !!$('.infotext-flex').find('span').text();
-	if (!fsLoaded) {
+	var infoWindowData = viewModel.infoWindowData;
+
+	// don't run until Foursquare data is populated
+	var fsStatus = infoWindowData.fsStatus();
+	if (fsStatus === 'ready') {
 		setTimeout(function() {
 			eventfulRenderInfo(data);
 		}, 500);
 	}
 
-	var infoWindowData = viewModel.infoWindowData;
 	// preserve infowindow width from foursquare render
+	// TODO: make this a function 'setInfoWindowWidth'
 	var $fsInfo = $('.foursquare-info');
 	var currentWidth = ($fsInfo.width() + img.photoSize() + 5) + 'px';
 	infoWindowData.width(currentWidth);
 
-	//var evData = viewModel.evInfoWindow;
 	var evData = infoWindowData.evData;
 	var events = [];
 
