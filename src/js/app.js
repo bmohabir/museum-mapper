@@ -527,7 +527,9 @@ function reposInfoWindow() {
 * @returns {string} - width of .infowindow-head in pixels
 */
 function getihWidth() {
-	return $('.infowindow-head').width() + 'px';
+	var $infowindowhead = $('.infowindow-head');
+
+	return $infowindowhead.width() + 'px';
 }
 
 /**
@@ -713,20 +715,30 @@ function getFoursquareData(marker) {
 }
 
 /**
+* Checks if Foursquare data is populated in viewmodel
+* @returns {boolean}
+*/
+function fsPopulated() {
+	var infoWindowData = viewModel.infoWindowData;
+	var fsStatus = infoWindowData.fsStatus();
+
+	return (fsStatus === 'ready') ? false : true;
+}
+
+/**
 * Updates infowindow with Eventful error info
 * @parameter {object} data - Error data
 */
 function eventfulRenderError(data) {
-	// don't render until Foursquare section is populated
-	var fsLoaded = !!$('.foursquare')[0];
-	if (!fsLoaded) {
-		setTimeout(function(){ eventfulRenderError(data); }, 500);
-		return;
+	// don't run until Foursquare data is populated
+	if (!fsPopulated()) {
+		setTimeout(function() {
+			eventfulRenderError(data);
+		}, 500);
 	}
 
 	var infoWindowData = viewModel.infoWindowData;
 	var error = infoWindowData.evErrorData;
-
 	var src = 'Eventful';
 	var msg = data.text;
 	var code = data.error > 1 ? data.error : null;
@@ -738,26 +750,31 @@ function eventfulRenderError(data) {
 }
 
 /**
+* Updates infowindow width stored in viewmodel based on Foursquare elements
+*/
+function setWidth() {
+	var infoWindowData = viewModel.infoWindowData;
+	var $fsInfo = $('.foursquare-info');
+	var currentWidth = ($fsInfo.width() + img.photoSize() + 5) + 'px';
+	infoWindowData.width(currentWidth);
+}
+
+/**
 * Updates infowindow with Eventful API response data
 * @parameter {object} data - Eventful museum data
 */
 function eventfulRenderInfo(data) {
-	var infoWindowData = viewModel.infoWindowData;
-
 	// don't run until Foursquare data is populated
-	var fsStatus = infoWindowData.fsStatus();
-	if (fsStatus === 'ready') {
+	if (!fsPopulated()) {
 		setTimeout(function() {
 			eventfulRenderInfo(data);
 		}, 500);
 	}
 
 	// preserve infowindow width from foursquare render
-	// TODO: make this a function 'setInfoWindowWidth'
-	var $fsInfo = $('.foursquare-info');
-	var currentWidth = ($fsInfo.width() + img.photoSize() + 5) + 'px';
-	infoWindowData.width(currentWidth);
+	setWidth();
 
+	var infoWindowData = viewModel.infoWindowData;
 	var evData = infoWindowData.evData;
 	var events = [];
 
