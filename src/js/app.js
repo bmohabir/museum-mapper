@@ -496,11 +496,6 @@ function refreshInfoWindow() {
 	var marker = infoWindow.marker;
 
 	infoWindow.open(map, marker);
-	// center the marker and then shift the map downward
-	// by half of the infowindow height
-	//var offset = $('.infowindow').height() / 2;
-	//map.setCenter(marker.getPosition());
-	//map.panBy(0, -1 * offset);
 
 	// enables KO bindings, needed for dynamically injected elements
 	var $infowindow = $(".infowindow")[0];
@@ -508,18 +503,50 @@ function refreshInfoWindow() {
 }
 
 /**
+* Checks if Foursquare data is populated in viewmodel
+* @returns {boolean}
+*/
+function fsPopulated() {
+	var infoWindowData = viewModel.infoWindowData;
+	var fsStatus = infoWindowData.fsStatus();
+
+	return (fsStatus === 'ready') ? false : true;
+}
+
+/**
+* Checks if Eventful data is populated in viewmodel
+* @returns {boolean}
+*/
+function evPopulated() {
+	var infoWindowData = viewModel.infoWindowData;
+	var evStatus = infoWindowData.evStatus();
+
+	return (evStatus === 'ready') ? false : true;
+}
+
+/**
 * Centers infowindow
 */
 function reposInfoWindow() {
+	if (!evPopulated) {
+		setTimeout(function() {
+			reposInfoWindow();
+		}, 100);
+
+		return;
+	}
+
 	setTimeout(function() {
 		var marker = infoWindow.marker;
-		// TODO: fix this for better handling of small vheight
-		var offset = ($('.infowindow').height() / 2) + 10;
+		var iwHeight = $('.infowindow').height();
+
+		// TODO: need to convert from pixels to latlng!!!
+		var offset = ((iwHeight + 10) / 2) + 10;
 		//console.log(offset);
 
 		map.setCenter(marker.getPosition());
-		map.panBy(0, -1 * offset);
-	}, 500);
+		//map.panBy(0, -1 * offset);
+	}, 100);
 }
 
 /**
@@ -715,17 +742,6 @@ function getFoursquareData(marker) {
 }
 
 /**
-* Checks if Foursquare data is populated in viewmodel
-* @returns {boolean}
-*/
-function fsPopulated() {
-	var infoWindowData = viewModel.infoWindowData;
-	var fsStatus = infoWindowData.fsStatus();
-
-	return (fsStatus === 'ready') ? false : true;
-}
-
-/**
 * Updates infowindow with Eventful error info
 * @parameter {object} data - Error data
 */
@@ -735,6 +751,8 @@ function eventfulRenderError(data) {
 		setTimeout(function() {
 			eventfulRenderError(data);
 		}, 500);
+
+		return;
 	}
 
 	var infoWindowData = viewModel.infoWindowData;
@@ -769,6 +787,8 @@ function eventfulRenderInfo(data) {
 		setTimeout(function() {
 			eventfulRenderInfo(data);
 		}, 500);
+
+		return;
 	}
 
 	// preserve infowindow width from foursquare render
@@ -802,6 +822,7 @@ function eventfulRenderInfo(data) {
 	}
 
 	infoWindowData.evLoaded();
+	reposInfoWindow();
 }
 
 /**

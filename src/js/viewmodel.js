@@ -127,12 +127,6 @@ var ViewModel = function() {
 		}
 	};
 	/**
-	* Centers infowindow after content is loaded
-	*/
-	self.posInfoWindow = function() {
-		reposInfoWindow();
-	};
-	/**
 	* Makes blank fsData object
 	* @returns {object}
 	*/
