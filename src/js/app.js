@@ -503,6 +503,45 @@ function refreshInfoWindow() {
 }
 
 /**
+* Repositions infowindow to properly present content
+*/
+function reposInfoWindow() {
+	// use the outer div for infowindow for calculations
+	var $infoWindowBox = $('.infowindow').parents().eq(3);
+
+	// delay repositioning to account for Maps API's own repositioning
+	// otherwise `.panBy()` stops panning prematurely
+	setTimeout(function() {
+		var marker = infoWindow.marker;
+		var iwHeight = $infoWindowBox.height();
+		var offset = -1 * ((iwHeight / 2) + 40);
+
+		map.setCenter(marker.getPosition());
+		map.panBy(0, offset);
+	}, 100);
+}
+
+/**
+* Gets width of .infowindow-head
+* @returns {string} - width of .infowindow-head in pixels
+*/
+function getihWidth() {
+	var $infowindowhead = $('.infowindow-head');
+
+	return $infowindowhead.width() + 'px';
+}
+
+/**
+* Updates infowindow width stored in viewmodel based on Foursquare elements
+*/
+function setWidth() {
+	var infoWindowData = viewModel.infoWindowData;
+	var $fsInfo = $('.foursquare-info');
+	var currentWidth = ($fsInfo.width() + img.photoSize() + 5) + 'px';
+	infoWindowData.width(currentWidth);
+}
+
+/**
 * Checks if Foursquare data is populated in viewmodel
 * @returns {boolean}
 */
@@ -525,41 +564,6 @@ function evPopulated() {
 }
 
 /**
-* Centers infowindow
-*/
-function reposInfoWindow() {
-	if (!evPopulated) {
-		setTimeout(function() {
-			reposInfoWindow();
-		}, 100);
-
-		return;
-	}
-
-	setTimeout(function() {
-		var marker = infoWindow.marker;
-		var iwHeight = $('.infowindow').height();
-
-		// TODO: need to convert from pixels to latlng!!!
-		var offset = ((iwHeight + 10) / 2) + 10;
-		//console.log(offset);
-
-		map.setCenter(marker.getPosition());
-		//map.panBy(0, -1 * offset);
-	}, 100);
-}
-
-/**
-* Gets width of .infowindow-head
-* @returns {string} - width of .infowindow-head in pixels
-*/
-function getihWidth() {
-	var $infowindowhead = $('.infowindow-head');
-
-	return $infowindowhead.width() + 'px';
-}
-
-/**
 * Updates infowindow with Foursquare error info
 * @parameter {object} data - Error data
 */
@@ -575,6 +579,7 @@ function foursquareRenderError(data) {
 	error.code(code);
 
 	infoWindowData.fsError();
+	reposInfoWindow();
 }
 
 /**
@@ -683,6 +688,7 @@ function foursquareRenderInfo(data) {
 	fsData.socialMedia.foursquare(fsURL);
 
 	infoWindowData.fsLoaded();
+	reposInfoWindow();
 }
 
 /**
@@ -746,15 +752,6 @@ function getFoursquareData(marker) {
 * @parameter {object} data - Error data
 */
 function eventfulRenderError(data) {
-	// don't run until Foursquare data is populated
-	if (!fsPopulated()) {
-		setTimeout(function() {
-			eventfulRenderError(data);
-		}, 500);
-
-		return;
-	}
-
 	var infoWindowData = viewModel.infoWindowData;
 	var error = infoWindowData.evErrorData;
 	var src = 'Eventful';
@@ -765,16 +762,7 @@ function eventfulRenderError(data) {
 	error.code(code);
 
 	infoWindowData.evError();
-}
-
-/**
-* Updates infowindow width stored in viewmodel based on Foursquare elements
-*/
-function setWidth() {
-	var infoWindowData = viewModel.infoWindowData;
-	var $fsInfo = $('.foursquare-info');
-	var currentWidth = ($fsInfo.width() + img.photoSize() + 5) + 'px';
-	infoWindowData.width(currentWidth);
+	reposInfoWindow();
 }
 
 /**
@@ -782,7 +770,8 @@ function setWidth() {
 * @parameter {object} data - Eventful museum data
 */
 function eventfulRenderInfo(data) {
-	// don't run until Foursquare data is populated
+	// don't run until Foursquare data is populated to
+	// ensure infowindow is sized correctly
 	if (!fsPopulated()) {
 		setTimeout(function() {
 			eventfulRenderInfo(data);
